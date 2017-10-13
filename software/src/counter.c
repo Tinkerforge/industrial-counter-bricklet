@@ -340,7 +340,7 @@ void counter_counter_init_3(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cylce_prescaler[0],
+		.prescaler_initval   = counter.config_duty_cylce_prescaler[3],
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
