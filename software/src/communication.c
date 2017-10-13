@@ -128,7 +128,7 @@ BootloaderHandleMessageResponse get_signal_data(const GetSignalData *data, GetSi
 	response->duty_cycle = duty_cycle;
 	response->period = period;
 
-	//counter_get_duty_cycle_and_period(data->pin, &(response->duty_cycle), &(response->period));
+	response->frequency = counter_get_frequency(data->pin);
 	response->pin_value = counter_get_pin_value(data->pin);
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
@@ -142,6 +142,7 @@ BootloaderHandleMessageResponse get_all_signal_data(const GetAllSignalData *data
 		counter_get_duty_cycle_and_period(pin, &duty_cycle, &period);
 		response->duty_cycle[pin] = duty_cycle;
 		response->period[pin] = period;
+		response->frequency[pin] = counter_get_frequency(pin);
 		response->pin_value[pin] = counter_get_pin_value(pin);
 	}
 

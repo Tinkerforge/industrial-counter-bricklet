@@ -34,6 +34,8 @@
 #include "xmc1_ccu4_map.h"
 #include "xmc_scu.h"
 
+#include <stdlib.h>
+
 Counter counter;
 
 // Keep the overflows as single global variables to be sure that the compiler
@@ -43,6 +45,15 @@ static uint32_t counter_overflow0 = 0;
 static uint32_t counter_overflow1 = 0;
 static uint32_t counter_overflow2 = 0;
 static uint32_t counter_overflow3 = 0;
+
+static int64_t counter_frequency_current0;
+static int64_t counter_frequency_current1;
+static int64_t counter_frequency_current2;
+static int64_t counter_frequency_current3;
+static int64_t counter_frequency_before0;
+static int64_t counter_frequency_before1;
+static int64_t counter_frequency_before2;
+static int64_t counter_frequency_before3;
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_21(void) {
 	counter_overflow0++;
@@ -58,6 +69,14 @@ void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IR
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_31(void) {
 	counter_overflow3--;
+}
+
+
+void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_16(void) {
+	XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
+	counter_frequency_before3 = counter_frequency_current3;
+	counter_frequency_current3 = counter_get_count(3);
+	XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
 }
 
 void counter_counter_init_0(const bool first) {
@@ -444,7 +463,62 @@ void counter_counter_init_3(const bool first) {
 	XMC_CCU4_EnableClock(COUNTER_IN3_MODULE, COUNTER_IN3_SLICE1_NUMBER);
 
 
-	// TODO: Use other two slices for frequency integration? Can we somehow get an interrupt for that?
+
+
+	// Slice 2: Count from 0 to 4800 (1ms)
+	XMC_CCU4_SLICE_COMPARE_CONFIG_t timer0_config2 = {
+		.timer_mode          = XMC_CCU4_SLICE_TIMER_COUNT_MODE_EA,
+		.monoshot            = XMC_CCU4_SLICE_TIMER_REPEAT_MODE_REPEAT,
+		.shadow_xfer_clear   = false,
+		.dither_timer_period = false,
+		.dither_duty_cycle   = false,
+		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
+		.mcm_enable          = false,
+		.prescaler_initval   = XMC_CCU4_SLICE_PRESCALER_2, // Use prescaler 2 to get mclk = fccu4
+		.float_limit         = 0U,
+		.dither_limit        = 0U,
+		.passive_level       = XMC_CCU4_SLICE_OUTPUT_PASSIVE_LEVEL_LOW,
+		.timer_concatenation = false
+	};
+
+	XMC_CCU4_SLICE_CompareInit(COUNTER_IN3_SLICE2, &timer0_config2);
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE2, 48000);
+	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE2, 0);
+	XMC_CCU4_EnableShadowTransfer(COUNTER_IN3_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_2 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_2);
+
+	XMC_CCU4_EnableClock(COUNTER_IN3_MODULE, COUNTER_IN3_SLICE2_NUMBER);
+
+
+	// Slice 3: Concatenate with Slice 2, count for every 1ms (10000 counts per seconds)
+	XMC_CCU4_SLICE_COMPARE_CONFIG_t timer0_config3 = {
+		.timer_mode          = XMC_CCU4_SLICE_TIMER_COUNT_MODE_EA,
+		.monoshot            = XMC_CCU4_SLICE_TIMER_REPEAT_MODE_REPEAT,
+		.shadow_xfer_clear   = false,
+		.dither_timer_period = false,
+		.dither_duty_cycle   = false,
+		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
+		.mcm_enable          = false,
+		.prescaler_initval   = XMC_CCU4_SLICE_PRESCALER_2,
+		.float_limit         = 0U,
+		.dither_limit        = 0U,
+		.passive_level       = XMC_CCU4_SLICE_OUTPUT_PASSIVE_LEVEL_LOW,
+		.timer_concatenation = true
+	};
+
+	XMC_CCU4_SLICE_CompareInit(COUNTER_IN3_SLICE3, &timer0_config3);
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE3, 1 << (counter.config_frequency_integration_time[3] + 8));
+	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE3, 0);
+	XMC_CCU4_EnableShadowTransfer(COUNTER_IN3_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_3 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_3);
+
+	XMC_CCU4_SLICE_EnableEvent(COUNTER_IN3_SLICE3, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH);
+	XMC_CCU4_SLICE_SetInterruptNode(COUNTER_IN3_SLICE3, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH, XMC_CCU4_SLICE_SR_ID_2);
+	NVIC_EnableIRQ(16);
+	NVIC_SetPriority(16, 0);
+	XMC_SCU_SetInterruptControl(16, XMC_SCU_IRQCTRL_CCU40_SR2_IRQ16);
+
+	XMC_CCU4_EnableClock(COUNTER_IN3_MODULE, COUNTER_IN3_SLICE3_NUMBER);
+
+
 
 	XMC_CCU4_SLICE_StopTimer(COUNTER_IN3_SLICE0);
 	counter_set_count(3, counter_save);
@@ -454,6 +528,8 @@ void counter_counter_init_3(const bool first) {
 		XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE0);
 	}
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE1);
+	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE2);
+	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE3);
 }
 
 void counter_counter_init(const uint8_t pin, const bool first) {
@@ -705,6 +781,23 @@ void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, 
 	counter.last_period[pin] = *period;
 }
 
+uint32_t counter_get_frequency(const uint8_t pin) {
+	int64_t current = 0;
+	int64_t before = 0;
+
+	// TODO: Use correct irq num for 0, 1, 2
+	switch(pin) {
+		case 0: NVIC_DisableIRQ(16); current = counter_frequency_current0; before = counter_frequency_before0; NVIC_EnableIRQ(16); break;
+		case 1: NVIC_DisableIRQ(16); current = counter_frequency_current1; before = counter_frequency_before1; NVIC_EnableIRQ(16); break;
+		case 2: NVIC_DisableIRQ(16); current = counter_frequency_current2; before = counter_frequency_before2; NVIC_EnableIRQ(16); break;
+		case 3: NVIC_DisableIRQ(16); current = counter_frequency_current3; before = counter_frequency_before3; NVIC_EnableIRQ(16); break;
+	}
+
+	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[pin] + 2);
+
+	return frequency;
+}
+
 void counter_tick(void) {
 	bool in1 = XMC_GPIO_GetInput(COUNTER_IN0_PIN);
 	if(in1) {
@@ -718,35 +811,5 @@ void counter_tick(void) {
 			counter_counter_init(pin, false);
 			counter.config_update[pin] = false;
 		}
-	}
-}
-
-
-
-uint32_t t = 0;
-uint32_t last_system_timer = 0;
-int64_t last_counter = 0;
-int64_t last_last_counter = 0;
-uint32_t freq = 0;
-
-uint32_t integration_time = 100;
-
-uint32_t freq2_old;
-uint32_t duty_low_old;
-uint32_t duty_high_old;
-
-void system_timer_callback(void) {
-	return;
-	if(system_timer_is_time_elapsed_ms(integration_time, last_system_timer)) {
-//		XMC_GPIO_SetOutputHigh(COUNTER_STATUS4_LED_PIN);
-		uint32_t current_system_timer = system_timer_get_ms();
-
-		uint64_t current_counter = counter_get_count(0);
-		freq = (((uint64_t)(current_counter - last_counter))*1000)/(2*integration_time);
-
-		last_last_counter = last_counter;
-		last_counter = current_counter;
-		last_system_timer = current_system_timer + integration_time;
-//		XMC_GPIO_SetOutputLow(COUNTER_STATUS4_LED_PIN);
 	}
 }

@@ -53,5 +53,6 @@ bool counter_get_pin_value(const uint8_t pin);
 void counter_set_count(const uint8_t pin, const int64_t count);
 int64_t counter_get_count(const uint8_t pin);
 void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, uint64_t *period);
+uint32_t counter_get_frequency(const uint8_t pin);
 
 #endif
