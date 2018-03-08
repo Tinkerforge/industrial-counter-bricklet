@@ -136,6 +136,8 @@ BootloaderHandleMessageResponse get_signal_data(const GetSignalData *data, GetSi
 
 BootloaderHandleMessageResponse get_all_signal_data(const GetAllSignalData *data, GetAllSignalData_Response *response) {
 	response->header.length = sizeof(GetAllSignalData_Response);
+	response->pin_value = 0;
+
 	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
 		uint16_t duty_cycle;
 		uint64_t period;
@@ -143,7 +145,7 @@ BootloaderHandleMessageResponse get_all_signal_data(const GetAllSignalData *data
 		response->duty_cycle[pin] = duty_cycle;
 		response->period[pin] = period;
 		response->frequency[pin] = counter_get_frequency(pin);
-		response->pin_value[pin] = counter_get_pin_value(pin);
+		response->pin_value |= counter_get_pin_value(pin) << pin;
 	}
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
@@ -170,10 +172,10 @@ BootloaderHandleMessageResponse set_counter_active(const SetCounterActive *data)
 
 BootloaderHandleMessageResponse set_all_counter_active(const SetAllCounterActive *data) {
 	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		counter.config_active[pin] = data->active[pin];
+		counter.config_active[pin] = data->active & (1 << pin);
 	}
 
-	counter_set_active((data->active[0] << 0) | (data->active[1] << 1) | (data->active[2] << 2) | (data->active[3] << 3));
+	counter_set_active(data->active);
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
@@ -191,10 +193,7 @@ BootloaderHandleMessageResponse get_counter_active(const GetCounterActive *data,
 
 BootloaderHandleMessageResponse get_all_counter_active(const GetAllCounterActive *data, GetAllCounterActive_Response *response) {
 	response->header.length = sizeof(GetAllCounterActive_Response);
-	uint8_t mask = counter_get_active();
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		response->active[pin] = mask & (1 << pin);
-	}
+	response->active = counter_get_active();
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }

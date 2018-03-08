@@ -168,7 +168,7 @@ typedef struct {
 	uint16_t duty_cycle[4];
 	uint64_t period[4];
 	uint32_t frequency[4];
-	bool pin_value[4];
+	uint8_t pin_value;
 } __attribute__((__packed__)) GetAllSignalData_Response;
 
 typedef struct {
@@ -179,7 +179,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	bool active[4];
+	uint8_t active;
 } __attribute__((__packed__)) SetAllCounterActive;
 
 typedef struct {
@@ -198,7 +198,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	bool active[4];
+	uint8_t active;
 } __attribute__((__packed__)) GetAllCounterActive_Response;
 
 typedef struct {
@@ -265,7 +265,7 @@ typedef struct {
 	uint16_t duty_cycle[4];
 	uint64_t period[4];
 	uint32_t frequency[4];
-	bool pin_value[4];
+	uint8_t pin_value;
 } __attribute__((__packed__)) AllSignalData_Callback;
 
 
