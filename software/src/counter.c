@@ -339,7 +339,7 @@ void counter_counter_init_0(const bool first) {
 	};
 
 	XMC_CCU4_SLICE_CompareInit(COUNTER_IN0_SLICE3, &timer0_config3);
-	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN0_SLICE3, 1 << (counter.config_frequency_integration_time[0] + 8));
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN0_SLICE3, 1 << (counter.config_frequency_integration_time[0] + 7));
 	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN0_SLICE3, 0);
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN0_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_3 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -626,7 +626,7 @@ void counter_counter_init_1(const bool first) {
 	};
 
 	XMC_CCU8_SLICE_CompareInit(COUNTER_IN1_SLICE3, &timer0_config3);
-	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN1_SLICE3, 1 << (counter.config_frequency_integration_time[1] + 8));
+	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN1_SLICE3, 1 << (counter.config_frequency_integration_time[1] + 7));
 	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN1_SLICE3, 0);
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN1_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_3 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -926,7 +926,7 @@ void counter_counter_init_2(const bool first) {
 	};
 
 	XMC_CCU8_SLICE_CompareInit(COUNTER_IN2_SLICE3, &timer0_config3);
-	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN2_SLICE3, 1 << (counter.config_frequency_integration_time[2] + 8));
+	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN2_SLICE3, 1 << (counter.config_frequency_integration_time[2] + 7));
 	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN2_SLICE3, 0);
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN2_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_3 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -1189,7 +1189,7 @@ void counter_counter_init_3(const bool first) {
 	};
 
 	XMC_CCU4_SLICE_CompareInit(COUNTER_IN3_SLICE3, &timer0_config3);
-	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE3, 1 << (counter.config_frequency_integration_time[3] + 8));
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE3, 1 << (counter.config_frequency_integration_time[3] + 7));
 	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE3, 0);
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN3_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_3 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -1476,7 +1476,10 @@ uint32_t counter_get_frequency(const uint8_t pin) {
 		case 3: NVIC_DisableIRQ(16); current = counter_frequency_current3; before = counter_frequency_before3; NVIC_EnableIRQ(16); break;
 	}
 
-	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[pin] + 2);
+	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[pin] + 1);
+	if(counter.config_count_edge[pin] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
+		frequency >>= 1;
+	}
 
 	return frequency;
 }
