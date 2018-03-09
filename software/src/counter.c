@@ -525,6 +525,13 @@ void counter_counter_init_1(const bool first) {
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
+
+	if(counter.config_count_edge[1] == INDUSTRIAL_COUNTER_COUNT_EDGE_FALLING) {
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE;
+	} else if(counter.config_count_edge[1] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_DUAL_EDGE;
+	}
+
 	XMC_CCU8_SLICE_ConfigureEvent(COUNTER_IN1_SLICE1, XMC_CCU8_SLICE_EVENT_0, &event0_config1);
 	XMC_CCU8_SLICE_CountConfig(COUNTER_IN1_SLICE1, XMC_CCU8_SLICE_EVENT_0);
 
@@ -825,6 +832,13 @@ void counter_counter_init_2(const bool first) {
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
+
+	if(counter.config_count_edge[2] == INDUSTRIAL_COUNTER_COUNT_EDGE_FALLING) {
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE;
+	} else if(counter.config_count_edge[2] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_DUAL_EDGE;
+	}
+
 	XMC_CCU8_SLICE_ConfigureEvent(COUNTER_IN2_SLICE1, XMC_CCU8_SLICE_EVENT_0, &event0_config1);
 	XMC_CCU8_SLICE_CountConfig(COUNTER_IN2_SLICE1, XMC_CCU8_SLICE_EVENT_0);
 
