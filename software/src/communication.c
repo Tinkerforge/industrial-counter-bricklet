@@ -160,9 +160,9 @@ BootloaderHandleMessageResponse set_counter_active(const SetCounterActive *data)
 
 	uint8_t mask = counter_get_active();
 	if(data->active) {
-		mask &= ~(1 << data->pin);
+		mask |=  (1 << data->pin);
 	} else {
-		mask |= ~(1 << data->pin);
+		mask &= ~(1 << data->pin);
 	}
 
 	counter_set_active(mask);
