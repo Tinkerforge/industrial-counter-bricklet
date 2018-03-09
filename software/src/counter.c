@@ -1488,7 +1488,6 @@ uint32_t counter_get_frequency(const uint8_t pin) {
 	int64_t current = 0;
 	int64_t before = 0;
 
-	// TODO: Use correct irq num for 0, 1, 2
 	switch(pin) {
 		case 0: NVIC_DisableIRQ(23); current = counter_frequency_current0; before = counter_frequency_before0; NVIC_EnableIRQ(23); break;
 		case 1: NVIC_DisableIRQ(12); current = counter_frequency_current1; before = counter_frequency_before1; NVIC_EnableIRQ(12); break;
