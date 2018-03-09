@@ -167,7 +167,7 @@ void counter_counter_init_0(const bool first) {
 	// Configure parameters for the event 0 (rising edge)
 	XMC_CCU4_SLICE_EVENT_CONFIG_t event0_config0 = {
 		.mapped_input = XMC_CCU4_SLICE_INPUT_AB,
-		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU4_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU4_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -176,7 +176,7 @@ void counter_counter_init_0(const bool first) {
 	// Configure parameters for the event 1 (falling edge)
 	XMC_CCU4_SLICE_EVENT_CONFIG_t event1_config0 = {
 		.mapped_input = XMC_CCU4_SLICE_INPUT_AB,
-		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
+		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
 		.level        = XMC_CCU4_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU4_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -429,7 +429,7 @@ void counter_counter_init_1(const bool first) {
 	// Configure parameters for the event 0 (rising edge)
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config0 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -438,7 +438,7 @@ void counter_counter_init_1(const bool first) {
 	// Configure parameters for the event 1 (falling edge)
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event1_config0 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -519,13 +519,13 @@ void counter_counter_init_1(const bool first) {
 	// Configure parameters for the event 0
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config1 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
 
 	if(counter.config_count_edge[1] == INDUSTRIAL_COUNTER_COUNT_EDGE_FALLING) {
-		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE;
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE;
 	} else if(counter.config_count_edge[1] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
 		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_DUAL_EDGE;
 	}
@@ -738,7 +738,7 @@ void counter_counter_init_2(const bool first) {
 	// Configure parameters for the event 0 (rising edge)
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config0 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -747,7 +747,7 @@ void counter_counter_init_2(const bool first) {
 	// Configure parameters for the event 1 (falling edge)
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event1_config0 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -828,13 +828,13 @@ void counter_counter_init_2(const bool first) {
 	// Configure parameters for the event 0
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config1 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
-		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU8_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU8_SLICE_EVENT_FILTER_DISABLED
 	};
 
 	if(counter.config_count_edge[2] == INDUSTRIAL_COUNTER_COUNT_EDGE_FALLING) {
-		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE;
+		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE;
 	} else if(counter.config_count_edge[2] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
 		event0_config1.edge = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_DUAL_EDGE;
 	}
@@ -1036,7 +1036,7 @@ void counter_counter_init_3(const bool first) {
 	// Configure parameters for the event 0 (rising edge)
 	XMC_CCU4_SLICE_EVENT_CONFIG_t event0_config0 = {
 		.mapped_input = XMC_CCU4_SLICE_INPUT_AC,
-		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
+		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
 		.level        = XMC_CCU4_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU4_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -1045,7 +1045,7 @@ void counter_counter_init_3(const bool first) {
 	// Configure parameters for the event 1 (falling edge)
 	XMC_CCU4_SLICE_EVENT_CONFIG_t event1_config0 = {
 		.mapped_input = XMC_CCU4_SLICE_INPUT_AC,
-		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE,
+		.edge         = XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
 		.level        = XMC_CCU4_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
 		.duration     = XMC_CCU4_SLICE_EVENT_FILTER_DISABLED
 	};
@@ -1400,10 +1400,10 @@ int64_t counter_get_count(const uint8_t pin) {
 
 bool counter_get_pin_value(const uint8_t pin) {
 	switch(pin) {
-		case 0: return XMC_GPIO_GetInput(COUNTER_IN0_PIN);
-		case 1: return XMC_GPIO_GetInput(COUNTER_IN1_PIN);
-		case 2: return XMC_GPIO_GetInput(COUNTER_IN2_PIN);
-		case 3: return XMC_GPIO_GetInput(COUNTER_IN3_PIN);
+		case 0: return !XMC_GPIO_GetInput(COUNTER_IN0_PIN);
+		case 1: return !XMC_GPIO_GetInput(COUNTER_IN1_PIN);
+		case 2: return !XMC_GPIO_GetInput(COUNTER_IN2_PIN);
+		case 3: return !XMC_GPIO_GetInput(COUNTER_IN3_PIN);
 	}
 
 	return false;
