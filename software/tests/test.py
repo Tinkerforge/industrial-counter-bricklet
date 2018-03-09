@@ -19,7 +19,25 @@ if __name__ == "__main__":
 
 #    counter.set_counter(counter.PIN_0, )
 
+    counter.set_counter_configuration(counter.PIN_0, 
+                                      counter.COUNT_EDGE_RISING,
+                                      counter.COUNT_DIRECTION_UP,
+                                      counter.DUTY_CYCLE_PRESCALER_1,
+                                      counter.FREQUENCY_INTEGRATION_TIME_256_MS)
+
     counter.set_counter_configuration(counter.PIN_1, 
+                                      counter.COUNT_EDGE_RISING,
+                                      counter.COUNT_DIRECTION_UP,
+                                      counter.DUTY_CYCLE_PRESCALER_1,
+                                      counter.FREQUENCY_INTEGRATION_TIME_256_MS)
+
+    counter.set_counter_configuration(counter.PIN_2, 
+                                      counter.COUNT_EDGE_RISING,
+                                      counter.COUNT_DIRECTION_UP,
+                                      counter.DUTY_CYCLE_PRESCALER_1,
+                                      counter.FREQUENCY_INTEGRATION_TIME_256_MS)
+
+    counter.set_counter_configuration(counter.PIN_3, 
                                       counter.COUNT_EDGE_RISING,
                                       counter.COUNT_DIRECTION_UP,
                                       counter.DUTY_CYCLE_PRESCALER_1,
@@ -27,8 +45,8 @@ if __name__ == "__main__":
 
     while True:
         t = time.time()
-        signal_data = counter.get_signal_data(1)
-        count = counter.get_counter(1)
+        signal_data = counter.get_all_signal_data()
+        count = counter.get_all_counter()
         print("Count: {}".format(count))
         print("Signal Data: {}".format(signal_data))
 #        print(signal_data.frequency - signal_data.frequency % 10000000)
