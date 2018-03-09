@@ -93,25 +93,21 @@ void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IR
 
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_23(void) {
-	XMC_GPIO_ToggleOutput(COUNTER_STATUS0_LED_PIN);
 	counter_frequency_before0 = counter_frequency_current0;
 	counter_frequency_current0 = counter_get_count(0);
 }
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_12(void) {
-	XMC_GPIO_ToggleOutput(COUNTER_STATUS1_LED_PIN);
 	counter_frequency_before1 = counter_frequency_current1;
 	counter_frequency_current1 = counter_get_count(1);
 }
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_6(void) {
-	XMC_GPIO_ToggleOutput(COUNTER_STATUS2_LED_PIN);
 	counter_frequency_before2 = counter_frequency_current2;
 	counter_frequency_current2 = counter_get_count(2);
 }
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_16(void) {
-	XMC_GPIO_ToggleOutput(COUNTER_STATUS3_LED_PIN);
 	counter_frequency_before3 = counter_frequency_current3;
 	counter_frequency_current3 = counter_get_count(3);
 }
