@@ -1505,12 +1505,30 @@ uint32_t counter_get_frequency(const uint8_t pin) {
 }
 
 void counter_tick(void) {
-/*	bool in1 = XMC_GPIO_GetInput(COUNTER_IN0_PIN);
-	if(in1) {
-		XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
+	// TODO: Other functions for LEDs?
+	if(XMC_GPIO_GetInput(COUNTER_IN0_PIN)) {
+		XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
 	} else {
+		XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
+	}
+
+	if(XMC_GPIO_GetInput(COUNTER_IN1_PIN)) {
 		XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
-	}*/
+	} else {
+		XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
+	}
+
+	if(XMC_GPIO_GetInput(COUNTER_IN2_PIN)) {
+		XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
+	} else {
+		XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
+	}
+
+	if(XMC_GPIO_GetInput(COUNTER_IN3_PIN)) {
+		XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
+	} else {
+		XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
+	}
 
 	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
 		if(counter.config_update[pin]) {
