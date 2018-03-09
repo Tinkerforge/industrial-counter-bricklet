@@ -47,14 +47,14 @@ static uint32_t counter_overflow1 = 0;
 static uint32_t counter_overflow2 = 0;
 static uint32_t counter_overflow3 = 0;
 
-static int64_t counter_frequency_current0;
-static int64_t counter_frequency_current1;
-static int64_t counter_frequency_current2;
-static int64_t counter_frequency_current3;
-static int64_t counter_frequency_before0;
-static int64_t counter_frequency_before1;
-static int64_t counter_frequency_before2;
-static int64_t counter_frequency_before3;
+static int64_t counter_frequency_current0 = 0;
+static int64_t counter_frequency_current1 = 0;
+static int64_t counter_frequency_current2 = 0;
+static int64_t counter_frequency_current3 = 0;
+static int64_t counter_frequency_before0 = 0;
+static int64_t counter_frequency_before1 = 0;
+static int64_t counter_frequency_before2 = 0;
+static int64_t counter_frequency_before3 = 0;
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) IRQ_Hdlr_21(void) {
 	counter_overflow0++;
@@ -298,7 +298,7 @@ void counter_counter_init_0(const bool first) {
 	XMC_CCU4_EnableClock(COUNTER_IN0_MODULE, COUNTER_IN0_SLICE1_NUMBER);
 
 
-	// Slice 2: Count from 0 to 4800 (1ms)
+	// Slice 2: Count from 0 to 48000 (1ms)
 	XMC_CCU4_SLICE_COMPARE_CONFIG_t timer0_config2 = {
 		.timer_mode          = XMC_CCU4_SLICE_TIMER_COUNT_MODE_EA,
 		.monoshot            = XMC_CCU4_SLICE_TIMER_REPEAT_MODE_REPEAT,
@@ -320,6 +320,7 @@ void counter_counter_init_0(const bool first) {
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN0_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_2 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_2);
 
 	XMC_CCU4_EnableClock(COUNTER_IN0_MODULE, COUNTER_IN0_SLICE2_NUMBER);
+	XMC_CCU4_SLICE_ClearTimer(COUNTER_IN0_SLICE2);
 
 
 	// Slice 3: Concatenate with Slice 2, count for every 1ms (10000 counts per seconds)
@@ -350,6 +351,7 @@ void counter_counter_init_0(const bool first) {
 	XMC_SCU_SetInterruptControl(23, XMC_SCU_IRQCTRL_CCU41_SR2_IRQ23);
 
 	XMC_CCU4_EnableClock(COUNTER_IN0_MODULE, COUNTER_IN0_SLICE3_NUMBER);
+	XMC_CCU4_SLICE_ClearTimer(COUNTER_IN0_SLICE3);
 
 
 	XMC_CCU4_SLICE_StopTimer(COUNTER_IN0_SLICE0);
@@ -359,6 +361,7 @@ void counter_counter_init_0(const bool first) {
 	if(counter.config_active[0]) {
 		XMC_CCU4_SLICE_StartTimer(COUNTER_IN0_SLICE0);
 	}
+
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN0_SLICE1);
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN0_SLICE2);
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN0_SLICE3);
@@ -518,7 +521,6 @@ void counter_counter_init_1(const bool first) {
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN1_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_1 | XMC_CCU8_SHADOW_TRANSFER_DITHER_SLICE_1 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_1);
 
 	// Configure parameters for the event 0
-	// Event 0 corresponds to rising edge, falling edge or both, depending on configuration of slice 0
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config1 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
 		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
@@ -604,6 +606,7 @@ void counter_counter_init_1(const bool first) {
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN1_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_2 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_2);
 
 	XMC_CCU8_EnableClock(COUNTER_IN1_MODULE, COUNTER_IN1_SLICE2_NUMBER);
+	XMC_CCU8_SLICE_ClearTimer(COUNTER_IN1_SLICE2);
 
 
 	// Slice 3: Concatenate with Slice 2, count for every 1ms (10000 counts per seconds)
@@ -640,6 +643,7 @@ void counter_counter_init_1(const bool first) {
 	XMC_CCU8_SLICE_EnableEvent(COUNTER_IN1_SLICE3, XMC_CCU8_SLICE_IRQ_ID_PERIOD_MATCH);
 	XMC_CCU8_SLICE_SetInterruptNode(COUNTER_IN1_SLICE3, XMC_CCU8_SLICE_IRQ_ID_PERIOD_MATCH, XMC_CCU8_SLICE_SR_ID_3);
 	XMC_CCU8_EnableClock(COUNTER_IN1_MODULE, COUNTER_IN1_SLICE3_NUMBER);
+	XMC_CCU8_SLICE_ClearTimer(COUNTER_IN1_SLICE3);
 
 
 	// Idea: CCU80.3 period match -> CCU80.SR3 -> ERU0.OGU33 -> ERU0.IDOUT -> Interrupt
@@ -666,6 +670,7 @@ void counter_counter_init_1(const bool first) {
 	if(counter.config_active[1]) {
 		XMC_CCU8_SLICE_StartTimer(COUNTER_IN1_SLICE0);
 	}
+
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN1_SLICE1);
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN1_SLICE2);
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN1_SLICE3);
@@ -825,7 +830,6 @@ void counter_counter_init_2(const bool first) {
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN2_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_1 | XMC_CCU8_SHADOW_TRANSFER_DITHER_SLICE_1 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_1);
 
 	// Configure parameters for the event 0
-	// Event 0 corresponds to rising edge, falling edge or both, depending on configuration of slice 0
 	XMC_CCU8_SLICE_EVENT_CONFIG_t event0_config1 = {
 		.mapped_input = XMC_CCU8_SLICE_INPUT_AA,
 		.edge         = XMC_CCU8_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE,
@@ -875,7 +879,7 @@ void counter_counter_init_2(const bool first) {
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN2_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_1 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_1);
 
 	// Enable clock for slice 1
-	XMC_CCU8_EnableClock(COUNTER_IN2_MODULE, COUNTER_IN1_SLICE1_NUMBER);
+	XMC_CCU8_EnableClock(COUNTER_IN2_MODULE, COUNTER_IN2_SLICE1_NUMBER);
 
 
 
@@ -911,6 +915,7 @@ void counter_counter_init_2(const bool first) {
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN2_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_2 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_2);
 
 	XMC_CCU8_EnableClock(COUNTER_IN2_MODULE, COUNTER_IN2_SLICE2_NUMBER);
+	XMC_CCU8_SLICE_ClearTimer(COUNTER_IN2_SLICE2);
 
 
 	// Slice 3: Concatenate with Slice 2, count for every 1ms (10000 counts per seconds)
@@ -947,6 +952,7 @@ void counter_counter_init_2(const bool first) {
 	XMC_CCU8_SLICE_EnableEvent(COUNTER_IN2_SLICE3, XMC_CCU8_SLICE_IRQ_ID_PERIOD_MATCH);
 	XMC_CCU8_SLICE_SetInterruptNode(COUNTER_IN2_SLICE3, XMC_CCU8_SLICE_IRQ_ID_PERIOD_MATCH, XMC_CCU8_SLICE_SR_ID_3);
 	XMC_CCU8_EnableClock(COUNTER_IN2_MODULE, COUNTER_IN1_SLICE3_NUMBER);
+	XMC_CCU8_SLICE_ClearTimer(COUNTER_IN2_SLICE3);
 
 
 	// Idea: CCU81.3 period match -> CCU81.SR3 -> ERU1.OGU33 -> ERU1.IDOUT -> Interrupt
@@ -973,6 +979,7 @@ void counter_counter_init_2(const bool first) {
 	if(counter.config_active[2]) {
 		XMC_CCU8_SLICE_StartTimer(COUNTER_IN2_SLICE0);
 	}
+
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN2_SLICE1);
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN2_SLICE2);
 	XMC_CCU8_SLICE_StartTimer(COUNTER_IN2_SLICE3);
@@ -1184,6 +1191,7 @@ void counter_counter_init_3(const bool first) {
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN3_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_2 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_2);
 
 	XMC_CCU4_EnableClock(COUNTER_IN3_MODULE, COUNTER_IN3_SLICE2_NUMBER);
+	XMC_CCU4_SLICE_ClearTimer(COUNTER_IN3_SLICE2);
 
 
 	// Slice 3: Concatenate with Slice 2, count for every 1ms (10000 counts per seconds)
@@ -1214,6 +1222,7 @@ void counter_counter_init_3(const bool first) {
 	XMC_SCU_SetInterruptControl(16, XMC_SCU_IRQCTRL_CCU40_SR2_IRQ16);
 
 	XMC_CCU4_EnableClock(COUNTER_IN3_MODULE, COUNTER_IN3_SLICE3_NUMBER);
+	XMC_CCU4_SLICE_ClearTimer(COUNTER_IN3_SLICE3);
 
 
 
@@ -1224,6 +1233,7 @@ void counter_counter_init_3(const bool first) {
 	if(counter.config_active[3]) {
 		XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE0);
 	}
+
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE1);
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE2);
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE3);
