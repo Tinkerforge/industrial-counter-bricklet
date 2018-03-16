@@ -3,7 +3,7 @@
   (general
     (links 95)
     (no_connects 0)
-    (area 96.945139 37.195139 281.34585 165.190793)
+    (area 96.944659 37.195139 281.34585 165.190793)
     (thickness 1.6002)
     (drawings 34)
     (tracks 369)
@@ -7284,7 +7284,7 @@
   (gr_text tinkerforge.com (at 127 51.9) (layer F.SilkS)
     (effects (font (size 0.8001 0.8001) (thickness 0.14986)))
   )
-  (gr_text "Industrial Counter 1.0" (at 136.6 58.05 90) (layer F.SilkS)
+  (gr_text "Industrial Counter\n1.0" (at 135.8 58.05 90) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (gr_arc (start 100.29952 40.5511) (end 97.80016 40.5511) (angle 90) (layer Edge.Cuts) (width 0.381))
