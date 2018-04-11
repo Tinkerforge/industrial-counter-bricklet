@@ -25,10 +25,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "bricklib2/utility/led_flicker.h"
+
 #define COUNTER_MAX_VALUE (((int64_t)(UINT16_MAX)*(int64_t)(INT32_MAX) + (int64_t)(UINT16_MAX)-(int64_t)(1)))
 #define COUNTER_MIN_VALUE ((int64_t)(UINT16_MAX)*(int64_t)(INT32_MIN))
 
 #define COUNTER_NUM 4
+
+typedef struct {
+	uint8_t config;
+	LEDFlickerState info_led_flicker_state;
+} INFO_LED_CONFIG_t;
 
 typedef struct {
 	bool config_update[COUNTER_NUM];
@@ -42,6 +49,8 @@ typedef struct {
 	uint64_t last_period[COUNTER_NUM];
 	uint32_t last_cv1[COUNTER_NUM];
 	uint32_t last_cv3[COUNTER_NUM];
+
+	INFO_LED_CONFIG_t info_leds[COUNTER_NUM];
 } Counter;
 
 void counter_init(void);

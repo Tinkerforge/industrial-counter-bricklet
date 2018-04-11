@@ -1285,6 +1285,10 @@ void counter_init(void) {
 		counter.last_cv3[pin]                          = 0;
 
 		counter_counter_init(pin, true);
+
+		// Info LED init
+		counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+		counter.info_leds[pin].config = INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS;
 	}
 }
 
@@ -1504,35 +1508,102 @@ uint32_t counter_get_frequency(const uint8_t pin) {
 }
 
 void counter_tick(void) {
-	// TODO: Other functions for LEDs?
-	if(XMC_GPIO_GetInput(COUNTER_IN0_PIN)) {
-		XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
-	} else {
-		XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
-	}
-
-	if(XMC_GPIO_GetInput(COUNTER_IN1_PIN)) {
-		XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
-	} else {
-		XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
-	}
-
-	if(XMC_GPIO_GetInput(COUNTER_IN2_PIN)) {
-		XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
-	} else {
-		XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
-	}
-
-	if(XMC_GPIO_GetInput(COUNTER_IN3_PIN)) {
-		XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
-	} else {
-		XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
-	}
-
 	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
 		if(counter.config_update[pin]) {
 			counter_counter_init(pin, false);
 			counter.config_update[pin] = false;
+		}
+
+		// Manage info LEDs
+		switch (counter.info_leds[pin].config) {
+			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_OFF:
+				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+
+				if(pin == 0) {
+					XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
+				}
+				else if(pin == 1) {
+					XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
+				}
+				else if(pin == 2) {
+					XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
+				}
+				else if(pin == 3) {
+					XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
+				}
+
+				break;
+
+			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_ON:
+				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_ON;
+
+				if(pin == 0) {
+					XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
+				}
+				else if(pin == 1) {
+					XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
+				}
+				else if(pin == 2) {
+					XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
+				}
+				else if(pin == 3) {
+					XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
+				}
+
+				break;
+
+			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_HEARTBEAT:
+				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_HEARTBEAT;
+
+				if(pin == 0) {
+					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS0_LED_PIN);
+				}
+				else if(pin == 1) {
+					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS1_LED_PIN);
+				}
+				else if(pin == 2) {
+					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS2_LED_PIN);
+				}
+				else if(pin == 3) {
+					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS3_LED_PIN);
+				}
+
+				break;
+
+			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS:
+				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+
+				if(pin == 0) {
+					if(XMC_GPIO_GetInput(COUNTER_IN0_PIN)) {
+						XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
+					} else {
+						XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
+					}
+				}
+				else if(pin == 1) {
+					if(XMC_GPIO_GetInput(COUNTER_IN1_PIN)) {
+						XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
+					} else {
+						XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
+					}				}
+				else if(pin == 2) {
+					if(XMC_GPIO_GetInput(COUNTER_IN2_PIN)) {
+						XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
+					} else {
+						XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
+					}				}
+				else if(pin == 3) {
+					if(XMC_GPIO_GetInput(COUNTER_IN3_PIN)) {
+						XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
+					} else {
+						XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
+					}
+				}
+
+				break;
+
+			default:
+				break;
 		}
 	}
 }

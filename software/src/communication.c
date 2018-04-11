@@ -46,6 +46,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_GET_ALL_COUNTER_CALLBACK_CONFIGURATION: return get_all_counter_callback_configuration(message, response);
 		case FID_SET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION: return set_all_signal_data_callback_configuration(message);
 		case FID_GET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION: return get_all_signal_data_callback_configuration(message, response);
+		case FID_SET_INFO_LED_CONFIG: return set_info_led_config(message);
+		case FID_GET_INFO_LED_CONFIG: return get_info_led_config(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
@@ -248,8 +250,27 @@ BootloaderHandleMessageResponse get_all_signal_data_callback_configuration(const
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
+BootloaderHandleMessageResponse set_info_led_config(const SetInfoLEDConfig *data) {
+	if(data->led > COUNTER_NUM - 1) {
+		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
 
+	counter.info_leds[data->led].config = data->config;
 
+	return HANDLE_MESSAGE_RESPONSE_EMPTY;
+}
+
+BootloaderHandleMessageResponse get_info_led_config(const GetInfoLEDConfig *data, GetInfoLEDConfig_Response *response) {
+	response->header.length = sizeof(GetInfoLEDConfig_Response);
+
+	if(data->led > COUNTER_NUM - 1) {
+		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
+
+	response->config = counter.info_leds[data->led].config;
+
+	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
+}
 
 bool handle_all_counter_callback(void) {
 	static bool is_buffered = false;
