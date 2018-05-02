@@ -46,8 +46,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_GET_ALL_COUNTER_CALLBACK_CONFIGURATION: return get_all_counter_callback_configuration(message, response);
 		case FID_SET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION: return set_all_signal_data_callback_configuration(message);
 		case FID_GET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION: return get_all_signal_data_callback_configuration(message, response);
-		case FID_SET_INFO_LED_CONFIG: return set_info_led_config(message);
-		case FID_GET_INFO_LED_CONFIG: return get_info_led_config(message, response);
+		case FID_SET_CHANNEL_LED_CONFIG: return set_channel_led_config(message);
+		case FID_GET_CHANNEL_LED_CONFIG: return get_channel_led_config(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
@@ -207,7 +207,7 @@ BootloaderHandleMessageResponse set_counter_configuration(const SetCounterConfig
 
 	counter.config_count_edge[data->pin] = data->count_edge;
 	counter.config_count_direction[data->pin] = data->count_direction;
-	counter.config_duty_cylce_prescaler[data->pin] = data->duty_cylce_prescaler;
+	counter.config_duty_cycle_prescaler[data->pin] = data->duty_cycle_prescaler;
 	counter.config_frequency_integration_time[data->pin] = data->frequency_integration_time;
 	counter.config_update[data->pin] = true;
 
@@ -222,7 +222,7 @@ BootloaderHandleMessageResponse get_counter_configuration(const GetCounterConfig
 	response->header.length = sizeof(GetCounterConfiguration_Response);
 	response->count_edge = counter.config_count_edge[data->pin];
 	response->count_direction = counter.config_count_direction[data->pin];
-	response->duty_cylce_prescaler = counter.config_duty_cylce_prescaler[data->pin];
+	response->duty_cycle_prescaler = counter.config_duty_cycle_prescaler[data->pin];
 	response->frequency_integration_time = counter.config_frequency_integration_time[data->pin];
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
@@ -250,18 +250,18 @@ BootloaderHandleMessageResponse get_all_signal_data_callback_configuration(const
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
-BootloaderHandleMessageResponse set_info_led_config(const SetInfoLEDConfig *data) {
-	if(data->led > COUNTER_NUM - 1) {
+BootloaderHandleMessageResponse set_channel_led_config(const SetChannelLEDConfig *data) {
+	if(data->channel > COUNTER_NUM - 1) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	counter.info_leds[data->led].config = data->config;
+	counter.info_leds[data->channel].config = data->config;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
-BootloaderHandleMessageResponse get_info_led_config(const GetInfoLEDConfig *data, GetInfoLEDConfig_Response *response) {
-	response->header.length = sizeof(GetInfoLEDConfig_Response);
+BootloaderHandleMessageResponse get_channel_led_config(const GetChannelLEDConfig *data, GetChannelLEDConfig_Response *response) {
+	response->header.length = sizeof(GetChannelLEDConfig_Response);
 
 	if(data->led > COUNTER_NUM - 1) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;

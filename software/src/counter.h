@@ -41,7 +41,7 @@ typedef struct {
 	bool config_update[COUNTER_NUM];
 	uint8_t config_count_edge[COUNTER_NUM];
 	uint8_t config_count_direction[COUNTER_NUM];
-	uint8_t config_duty_cylce_prescaler[COUNTER_NUM];
+	uint8_t config_duty_cycle_prescaler[COUNTER_NUM];
 	uint8_t config_frequency_integration_time[COUNTER_NUM];
 	bool config_active[COUNTER_NUM];
 

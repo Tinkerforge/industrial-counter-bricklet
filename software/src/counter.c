@@ -190,7 +190,7 @@ void counter_counter_init_0(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cylce_prescaler[0],
+		.prescaler_initval   = counter.config_duty_cycle_prescaler[0],
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -452,7 +452,7 @@ void counter_counter_init_1(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU8_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cylce_prescaler[1],
+		.prescaler_initval   = counter.config_duty_cycle_prescaler[1],
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -761,7 +761,7 @@ void counter_counter_init_2(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU8_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cylce_prescaler[1],
+		.prescaler_initval   = counter.config_duty_cycle_prescaler[1],
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -1059,7 +1059,7 @@ void counter_counter_init_3(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cylce_prescaler[3],
+		.prescaler_initval   = counter.config_duty_cycle_prescaler[3],
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -1276,7 +1276,7 @@ void counter_init(void) {
 		counter.config_update[pin]                     = false;
 		counter.config_count_edge[pin]                 = INDUSTRIAL_COUNTER_COUNT_EDGE_RISING;
 		counter.config_count_direction[pin]            = INDUSTRIAL_COUNTER_COUNT_DIRECTION_UP;
-		counter.config_duty_cylce_prescaler[pin]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
+		counter.config_duty_cycle_prescaler[pin]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
 		counter.config_frequency_integration_time[pin] = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
 		counter.config_active[pin]                     = true;
 		counter.last_duty_cycle[pin]                   = 0;

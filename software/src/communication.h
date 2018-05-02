@@ -77,10 +77,10 @@ void communication_init(void);
 #define INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_32768_MS 8
 #define INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO 255
 
-#define INDUSTRIAL_COUNTER_INFO_LED_CONFIG_OFF 0
-#define INDUSTRIAL_COUNTER_INFO_LED_CONFIG_ON 1
-#define INDUSTRIAL_COUNTER_INFO_LED_CONFIG_SHOW_HEARTBEAT 2
-#define INDUSTRIAL_COUNTER_INFO_LED_CONFIG_SHOW_CHANNEL_STATUS 3
+#define INDUSTRIAL_COUNTER_CHANNEL_LED_CONFIG_OFF 0
+#define INDUSTRIAL_COUNTER_CHANNEL_LED_CONFIG_ON 1
+#define INDUSTRIAL_COUNTER_CHANNEL_LED_CONFIG_SHOW_HEARTBEAT 2
+#define INDUSTRIAL_COUNTER_CHANNEL_LED_CONFIG_SHOW_CHANNEL_STATUS 3
 
 #define INDUSTRIAL_COUNTER_BOOTLOADER_MODE_BOOTLOADER 0
 #define INDUSTRIAL_COUNTER_BOOTLOADER_MODE_FIRMWARE 1
@@ -117,8 +117,8 @@ void communication_init(void);
 #define FID_GET_ALL_COUNTER_CALLBACK_CONFIGURATION 14
 #define FID_SET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION 15
 #define FID_GET_ALL_SIGNAL_DATA_CALLBACK_CONFIGURATION 16
-#define FID_SET_INFO_LED_CONFIG 17
-#define FID_GET_INFO_LED_CONFIG 18
+#define FID_SET_CHANNEL_LED_CONFIG 17
+#define FID_GET_CHANNEL_LED_CONFIG 18
 
 #define FID_CALLBACK_ALL_COUNTER 19
 #define FID_CALLBACK_ALL_SIGNAL_DATA 20
@@ -213,7 +213,7 @@ typedef struct {
 	uint8_t pin;
 	uint8_t count_edge;
 	uint8_t count_direction;
-	uint8_t duty_cylce_prescaler;
+	uint8_t duty_cycle_prescaler;
 	uint8_t frequency_integration_time;
 } __attribute__((__packed__)) SetCounterConfiguration;
 
@@ -226,7 +226,7 @@ typedef struct {
 	TFPMessageHeader header;
 	uint8_t count_edge;
 	uint8_t count_direction;
-	uint8_t duty_cylce_prescaler;
+	uint8_t duty_cycle_prescaler;
 	uint8_t frequency_integration_time;
 } __attribute__((__packed__)) GetCounterConfiguration_Response;
 
@@ -264,19 +264,19 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t led;
+	uint8_t channel;
 	uint8_t config;
-} __attribute__((__packed__)) SetInfoLEDConfig;
+} __attribute__((__packed__)) SetChannelLEDConfig;
 
 typedef struct {
 	TFPMessageHeader header;
 	uint8_t led;
-} __attribute__((__packed__)) GetInfoLEDConfig;
+} __attribute__((__packed__)) GetChannelLEDConfig;
 
 typedef struct {
 	TFPMessageHeader header;
 	uint8_t config;
-} __attribute__((__packed__)) GetInfoLEDConfig_Response;
+} __attribute__((__packed__)) GetChannelLEDConfig_Response;
 
 typedef struct {
 	TFPMessageHeader header;
@@ -309,8 +309,8 @@ BootloaderHandleMessageResponse set_all_counter_callback_configuration(const Set
 BootloaderHandleMessageResponse get_all_counter_callback_configuration(const GetAllCounterCallbackConfiguration *data, GetAllCounterCallbackConfiguration_Response *response);
 BootloaderHandleMessageResponse set_all_signal_data_callback_configuration(const SetAllSignalDataCallbackConfiguration *data);
 BootloaderHandleMessageResponse get_all_signal_data_callback_configuration(const GetAllSignalDataCallbackConfiguration *data, GetAllSignalDataCallbackConfiguration_Response *response);
-BootloaderHandleMessageResponse set_info_led_config(const SetInfoLEDConfig *data);
-BootloaderHandleMessageResponse get_info_led_config(const GetInfoLEDConfig *data, GetInfoLEDConfig_Response *response);
+BootloaderHandleMessageResponse set_channel_led_config(const SetChannelLEDConfig *data);
+BootloaderHandleMessageResponse get_channel_led_config(const GetChannelLEDConfig *data, GetChannelLEDConfig_Response *response);
 
 // Callbacks
 bool handle_all_counter_callback(void);
