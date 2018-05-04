@@ -29,7 +29,6 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:industrial-counter-bricklet-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -1177,7 +1176,7 @@ Wire Wire Line
 Wire Wire Line
 	4200 6550 3800 6550
 $Comp
-L Conn_01x01 J1
+L CONN_01X01 J1
 U 1 1 59C008AC
 P 5300 4950
 F 0 "J1" H 5300 5050 50  0000 C CNN
