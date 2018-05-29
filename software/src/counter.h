@@ -56,12 +56,12 @@ typedef struct {
 void counter_init(void);
 void counter_tick(void);
 
-void counter_set_active(const uint8_t pin_mask);
+void counter_set_active(const uint8_t channel_mask);
 uint8_t counter_get_active(void);
-bool counter_get_pin_value(const uint8_t pin);
-void counter_set_count(const uint8_t pin, const int64_t count);
-int64_t counter_get_count(const uint8_t pin);
-void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, uint64_t *period);
-uint32_t counter_get_frequency(const uint8_t pin);
+bool counter_get_value(const uint8_t channel);
+void counter_set_count(const uint8_t channel, const int64_t count);
+int64_t counter_get_count(const uint8_t channel);
+void counter_get_duty_cycle_and_period(const uint8_t channel, uint16_t *duty_cycle, uint64_t *period);
+uint32_t counter_get_frequency(const uint8_t channel);
 
 #endif

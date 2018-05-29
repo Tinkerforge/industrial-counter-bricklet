@@ -54,12 +54,12 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 
 
 BootloaderHandleMessageResponse get_counter(const GetCounter *data, GetCounter_Response *response) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
 	response->header.length = sizeof(GetCounter_Response);
-	response->counter = counter_get_count(data->pin);
+	response->counter = counter_get_count(data->channel);
 
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
@@ -67,8 +67,9 @@ BootloaderHandleMessageResponse get_counter(const GetCounter *data, GetCounter_R
 
 BootloaderHandleMessageResponse get_all_counter(const GetAllCounter *data, GetAllCounter_Response *response) {
 	response->header.length = sizeof(GetAllCounter_Response);
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		response->counter[pin] = counter_get_count(pin);
+
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		response->counter[channel] = counter_get_count(channel);
 	}
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
@@ -79,20 +80,19 @@ BootloaderHandleMessageResponse set_counter(const SetCounter *data) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
 	uint8_t active = counter_get_active();
-	if(active & (1 << data->pin)) {
-		counter_set_active((active & (~(1 << data->pin))));
+	if(active & (1 << data->channel)) {
+		counter_set_active((active & (~(1 << data->channel))));
 	}
-	counter_set_count(data->pin, data->counter);
+	counter_set_count(data->channel, data->counter);
 
-	if(active & (1 << data->pin)) {
+	if(active & (1 << data->channel)) {
 		counter_set_active(active);
 	}
-
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
@@ -108,8 +108,8 @@ BootloaderHandleMessageResponse set_all_counter(const SetAllCounter *data) {
 	uint8_t active = counter_get_active();
 	counter_set_active(0);
 
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		counter_set_count(pin, data->counter[pin]);
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		counter_set_count(channel, data->counter[channel]);
 	}
 
 	counter_set_active(active);
@@ -118,7 +118,7 @@ BootloaderHandleMessageResponse set_all_counter(const SetAllCounter *data) {
 }
 
 BootloaderHandleMessageResponse get_signal_data(const GetSignalData *data, GetSignalData_Response *response) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -126,45 +126,47 @@ BootloaderHandleMessageResponse get_signal_data(const GetSignalData *data, GetSi
 
 	uint16_t duty_cycle;
 	uint64_t period;
-	counter_get_duty_cycle_and_period(data->pin, &duty_cycle, &period);
+	counter_get_duty_cycle_and_period(data->channel, &duty_cycle, &period);
 	response->duty_cycle = duty_cycle;
 	response->period = period;
 
-	response->frequency = counter_get_frequency(data->pin);
-	response->pin_value = counter_get_pin_value(data->pin);
+	response->frequency = counter_get_frequency(data->channel);
+	response->value = counter_get_value(data->channel);
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
 BootloaderHandleMessageResponse get_all_signal_data(const GetAllSignalData *data, GetAllSignalData_Response *response) {
 	response->header.length = sizeof(GetAllSignalData_Response);
-	response->pin_value = 0;
+	response->value = 0;
 
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
 		uint16_t duty_cycle;
 		uint64_t period;
-		counter_get_duty_cycle_and_period(pin, &duty_cycle, &period);
-		response->duty_cycle[pin] = duty_cycle;
-		response->period[pin] = period;
-		response->frequency[pin] = counter_get_frequency(pin);
-		response->pin_value |= counter_get_pin_value(pin) << pin;
+
+		counter_get_duty_cycle_and_period(channel, &duty_cycle, &period);
+
+		response->duty_cycle[channel] = duty_cycle;
+		response->period[channel] = period;
+		response->frequency[channel] = counter_get_frequency(channel);
+		response->value |= counter_get_value(channel) << channel;
 	}
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
 BootloaderHandleMessageResponse set_counter_active(const SetCounterActive *data) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	counter.config_active[data->pin] = data->active;
+	counter.config_active[data->channel] = data->active;
 
 	uint8_t mask = counter_get_active();
 	if(data->active) {
-		mask |=  (1 << data->pin);
+		mask |=  (1 << data->channel);
 	} else {
-		mask &= ~(1 << data->pin);
+		mask &= ~(1 << data->channel);
 	}
 
 	counter_set_active(mask);
@@ -173,8 +175,8 @@ BootloaderHandleMessageResponse set_counter_active(const SetCounterActive *data)
 }
 
 BootloaderHandleMessageResponse set_all_counter_active(const SetAllCounterActive *data) {
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		counter.config_active[pin] = data->active & (1 << pin);
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		counter.config_active[channel] = data->active & (1 << channel);
 	}
 
 	counter_set_active(data->active);
@@ -183,12 +185,12 @@ BootloaderHandleMessageResponse set_all_counter_active(const SetAllCounterActive
 }
 
 BootloaderHandleMessageResponse get_counter_active(const GetCounterActive *data, GetCounterActive_Response *response) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
 	response->header.length = sizeof(GetCounterActive_Response);
-	response->active = counter_get_active() & (1 << data->pin);
+	response->active = counter_get_active() & (1 << data->channel);
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
@@ -201,29 +203,29 @@ BootloaderHandleMessageResponse get_all_counter_active(const GetAllCounterActive
 }
 
 BootloaderHandleMessageResponse set_counter_configuration(const SetCounterConfiguration *data) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	counter.config_count_edge[data->pin] = data->count_edge;
-	counter.config_count_direction[data->pin] = data->count_direction;
-	counter.config_duty_cycle_prescaler[data->pin] = data->duty_cycle_prescaler;
-	counter.config_frequency_integration_time[data->pin] = data->frequency_integration_time;
-	counter.config_update[data->pin] = true;
+	counter.config_count_edge[data->channel] = data->count_edge;
+	counter.config_count_direction[data->channel] = data->count_direction;
+	counter.config_duty_cycle_prescaler[data->channel] = data->duty_cycle_prescaler;
+	counter.config_frequency_integration_time[data->channel] = data->frequency_integration_time;
+	counter.config_update[data->channel] = true;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
 BootloaderHandleMessageResponse get_counter_configuration(const GetCounterConfiguration *data, GetCounterConfiguration_Response *response) {
-	if(data->pin > COUNTER_NUM) {
+	if(data->channel > COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
 	response->header.length = sizeof(GetCounterConfiguration_Response);
-	response->count_edge = counter.config_count_edge[data->pin];
-	response->count_direction = counter.config_count_direction[data->pin];
-	response->duty_cycle_prescaler = counter.config_duty_cycle_prescaler[data->pin];
-	response->frequency_integration_time = counter.config_frequency_integration_time[data->pin];
+	response->count_edge = counter.config_count_edge[data->channel];
+	response->count_direction = counter.config_count_direction[data->channel];
+	response->duty_cycle_prescaler = counter.config_duty_cycle_prescaler[data->channel];
+	response->frequency_integration_time = counter.config_frequency_integration_time[data->channel];
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }

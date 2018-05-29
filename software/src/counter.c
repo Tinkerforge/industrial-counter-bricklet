@@ -1235,8 +1235,8 @@ void counter_counter_init_3(const bool first) {
 	XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE3);
 }
 
-void counter_counter_init(const uint8_t pin, const bool first) {
-	switch(pin) {
+void counter_counter_init(const uint8_t channel, const bool first) {
+	switch(channel) {
 		case 0: counter_counter_init_0(first); break;
 		case 1: counter_counter_init_1(first); break;
 		case 2: counter_counter_init_2(first); break;
@@ -1272,41 +1272,41 @@ void counter_init(void) {
 	XMC_GPIO_Init(COUNTER_IN1_POSIF_PIN, &counter_pin_config);
 	XMC_GPIO_Init(COUNTER_IN2_POSIF_PIN, &counter_pin_config);
 
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		counter.config_update[pin]                     = false;
-		counter.config_count_edge[pin]                 = INDUSTRIAL_COUNTER_COUNT_EDGE_RISING;
-		counter.config_count_direction[pin]            = INDUSTRIAL_COUNTER_COUNT_DIRECTION_UP;
-		counter.config_duty_cycle_prescaler[pin]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
-		counter.config_frequency_integration_time[pin] = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
-		counter.config_active[pin]                     = true;
-		counter.last_duty_cycle[pin]                   = 0;
-		counter.last_period[pin]                       = 0;
-		counter.last_cv1[pin]                          = 0;
-		counter.last_cv3[pin]                          = 0;
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		counter.config_update[channel]                     = false;
+		counter.config_count_edge[channel]                 = INDUSTRIAL_COUNTER_COUNT_EDGE_RISING;
+		counter.config_count_direction[channel]            = INDUSTRIAL_COUNTER_COUNT_DIRECTION_UP;
+		counter.config_duty_cycle_prescaler[channel]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
+		counter.config_frequency_integration_time[channel] = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
+		counter.config_active[channel]                     = true;
+		counter.last_duty_cycle[channel]                   = 0;
+		counter.last_period[channel]                       = 0;
+		counter.last_cv1[channel]                          = 0;
+		counter.last_cv3[channel]                          = 0;
 
-		counter_counter_init(pin, true);
+		counter_counter_init(channel, true);
 
 		// Info LED init
-		counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
-		counter.info_leds[pin].config = INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS;
+		counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+		counter.info_leds[channel].config = INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS;
 	}
 }
 
-void counter_set_active(const uint8_t pin_mask) {
+void counter_set_active(const uint8_t channel_mask) {
 	// TODO: Can we somehow do this atomically through shadow registers?
 
 	uint8_t current = counter_get_active();
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		if((current & (1 << pin)) != (pin_mask & (1 << pin))) {
-			if(pin_mask & (1 << pin)) {
-				switch(pin) {
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		if((current & (1 << channel)) != (channel_mask & (1 << channel))) {
+			if(channel_mask & (1 << channel)) {
+				switch(channel) {
 					case 0: XMC_CCU4_SLICE_StartTimer(COUNTER_IN0_SLICE1); break;
 					case 1: XMC_CCU8_SLICE_StartTimer(COUNTER_IN1_SLICE1); break;
 					case 2: XMC_CCU8_SLICE_StartTimer(COUNTER_IN2_SLICE1); break;
 					case 3: XMC_CCU4_SLICE_StartTimer(COUNTER_IN3_SLICE1); break;
 				}
 			} else {
-				switch(pin) {
+				switch(channel) {
 					case 0: XMC_CCU4_SLICE_StopTimer(COUNTER_IN0_SLICE1); break;
 					case 1: XMC_CCU8_SLICE_StopTimer(COUNTER_IN1_SLICE1); break;
 					case 2: XMC_CCU8_SLICE_StopTimer(COUNTER_IN2_SLICE1); break;
@@ -1325,14 +1325,14 @@ uint8_t counter_get_active(void) {
 }
 
 // Note: This function assumes that the slice is not currently active!
-void counter_set_count(const uint8_t pin, const int64_t count) {
+void counter_set_count(const uint8_t channel, const int64_t count) {
     // We start with a offset of 2, since it allows for easy overflow/underflow handling.
     // The CCU4 has an interrupt for the decrease from 2 to 1 and we can define a match for the
     // increase from 1 to 2. The overflow from 0xFFFF to 0 and vice versa can't be easily captured.
 	uint16_t slice_value = (count+2) & 0xFFFF;
 	uint32_t overflow_value = (int32_t)((count+2) >> 16);
 
-	switch(pin) {
+	switch(channel) {
 		case 0: XMC_CCU4_SLICE_SetTimerValue(COUNTER_IN0_SLICE1, slice_value); counter_overflow0 = overflow_value; break;
 		case 1: XMC_CCU8_SLICE_SetTimerValue(COUNTER_IN1_SLICE1, slice_value); counter_overflow1 = overflow_value; break;
 		case 2: XMC_CCU8_SLICE_SetTimerValue(COUNTER_IN2_SLICE1, slice_value); counter_overflow2 = overflow_value; break;
@@ -1340,10 +1340,10 @@ void counter_set_count(const uint8_t pin, const int64_t count) {
 	}
 }
 
-int64_t counter_get_count(const uint8_t pin) {
+int64_t counter_get_count(const uint8_t channel) {
 	int32_t time_high;
 	uint16_t time_low;
-	switch(pin) {
+	switch(channel) {
 		case 0: {
 			time_high = counter_overflow0;
 			time_low = XMC_CCU4_SLICE_GetTimerValue(COUNTER_IN0_SLICE1);
@@ -1402,8 +1402,8 @@ int64_t counter_get_count(const uint8_t pin) {
 }
 
 
-bool counter_get_pin_value(const uint8_t pin) {
-	switch(pin) {
+bool counter_get_value(const uint8_t channel) {
+	switch(channel) {
 		case 0: return !XMC_GPIO_GetInput(COUNTER_IN0_PIN);
 		case 1: return !XMC_GPIO_GetInput(COUNTER_IN1_PIN);
 		case 2: return !XMC_GPIO_GetInput(COUNTER_IN2_PIN);
@@ -1413,12 +1413,12 @@ bool counter_get_pin_value(const uint8_t pin) {
 	return false;
 }
 
-void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, uint64_t *period) {
+void counter_get_duty_cycle_and_period(const uint8_t channel, uint16_t *duty_cycle, uint64_t *period) {
 	uint32_t cv1 = 0;
 	uint32_t cv3 = 0;
 
 	// Get newest CV values from correct slice
-	switch(pin) {
+	switch(channel) {
 		case 0: {
 			cv1 = COUNTER_IN0_SLICE0->CV[1];
 			cv3 = COUNTER_IN0_SLICE0->CV[3];
@@ -1453,15 +1453,15 @@ void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, 
 
 	// If the CV value is not valid we use the last valid one
 	if(!(cv1 & CCU4_CC4_CV_FFL_Msk)) {
-		cv1 = counter.last_cv1[pin];
+		cv1 = counter.last_cv1[channel];
 	} else {
-		counter.last_cv1[pin] = cv1;
+		counter.last_cv1[channel] = cv1;
 	}
 
 	if(!(cv3 & CCU4_CC4_CV_FFL_Msk)) {
-		cv3 = counter.last_cv3[pin];
+		cv3 = counter.last_cv3[channel];
 	} else {
-		counter.last_cv3[pin] = cv3;
+		counter.last_cv3[channel] = cv3;
 	}
 
 	// Check if both CV values are valid and if the prescalers match
@@ -1473,8 +1473,8 @@ void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, 
 
 	// If the CV values were not sane, we return the last known duty cycle and period
 	if(((low+high) == 0) || (low == -1) || (high == -1)) {
-		*duty_cycle = counter.last_duty_cycle[pin];
-		*period = counter.last_period[pin];
+		*duty_cycle = counter.last_duty_cycle[channel];
+		*period = counter.last_period[channel];
 		return;
 	}
 
@@ -1484,23 +1484,23 @@ void counter_get_duty_cycle_and_period(const uint8_t pin, uint16_t *duty_cycle, 
 	*period = ((uint64_t)(low + high))*(1LL << prescaler)*125/12;
 
 	// Save duty cycle and period
-	counter.last_duty_cycle[pin] = *duty_cycle;
-	counter.last_period[pin] = *period;
+	counter.last_duty_cycle[channel] = *duty_cycle;
+	counter.last_period[channel] = *period;
 }
 
-uint32_t counter_get_frequency(const uint8_t pin) {
+uint32_t counter_get_frequency(const uint8_t channel) {
 	int64_t current = 0;
 	int64_t before = 0;
 
-	switch(pin) {
+	switch(channel) {
 		case 0: NVIC_DisableIRQ(23); current = counter_frequency_current0; before = counter_frequency_before0; NVIC_EnableIRQ(23); break;
 		case 1: NVIC_DisableIRQ(12); current = counter_frequency_current1; before = counter_frequency_before1; NVIC_EnableIRQ(12); break;
 		case 2: NVIC_DisableIRQ(6);  current = counter_frequency_current2; before = counter_frequency_before2; NVIC_EnableIRQ(6); break;
 		case 3: NVIC_DisableIRQ(16); current = counter_frequency_current3; before = counter_frequency_before3; NVIC_EnableIRQ(16); break;
 	}
 
-	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[pin] + 1);
-	if(counter.config_count_edge[pin] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
+	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[channel] + 1);
+	if(counter.config_count_edge[channel] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
 		frequency >>= 1;
 	}
 
@@ -1508,91 +1508,93 @@ uint32_t counter_get_frequency(const uint8_t pin) {
 }
 
 void counter_tick(void) {
-	for(uint8_t pin = 0; pin < COUNTER_NUM; pin++) {
-		if(counter.config_update[pin]) {
-			counter_counter_init(pin, false);
-			counter.config_update[pin] = false;
+	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+		if(counter.config_update[channel]) {
+			counter_counter_init(channel, false);
+			counter.config_update[channel] = false;
 		}
 
 		// Manage info LEDs
-		switch (counter.info_leds[pin].config) {
+		switch (counter.info_leds[channel].config) {
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_OFF:
-				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
 
-				if(pin == 0) {
+				if(channel == 0) {
 					XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
 				}
-				else if(pin == 1) {
+				else if(channel == 1) {
 					XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
 				}
-				else if(pin == 2) {
+				else if(channel == 2) {
 					XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
 				}
-				else if(pin == 3) {
+				else if(channel == 3) {
 					XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
 				}
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_ON:
-				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_ON;
+				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_ON;
 
-				if(pin == 0) {
+				if(channel == 0) {
 					XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
 				}
-				else if(pin == 1) {
+				else if(channel == 1) {
 					XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
 				}
-				else if(pin == 2) {
+				else if(channel == 2) {
 					XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
 				}
-				else if(pin == 3) {
+				else if(channel == 3) {
 					XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
 				}
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_HEARTBEAT:
-				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_HEARTBEAT;
+				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_HEARTBEAT;
 
-				if(pin == 0) {
-					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS0_LED_PIN);
+				if(channel == 0) {
+					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS0_LED_PIN);
 				}
-				else if(pin == 1) {
-					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS1_LED_PIN);
+				else if(channel == 1) {
+					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS1_LED_PIN);
 				}
-				else if(pin == 2) {
-					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS2_LED_PIN);
+				else if(channel == 2) {
+					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS2_LED_PIN);
 				}
-				else if(pin == 3) {
-					led_flicker_tick(&counter.info_leds[pin].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS3_LED_PIN);
+				else if(channel == 3) {
+					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS3_LED_PIN);
 				}
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS:
-				counter.info_leds[pin].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
+				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
 
-				if(pin == 0) {
+				if(channel == 0) {
 					if(XMC_GPIO_GetInput(COUNTER_IN0_PIN)) {
 						XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
 					} else {
 						XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
 					}
 				}
-				else if(pin == 1) {
+				else if(channel == 1) {
 					if(XMC_GPIO_GetInput(COUNTER_IN1_PIN)) {
 						XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
 					} else {
 						XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
-					}				}
-				else if(pin == 2) {
+					}
+				}
+				else if(channel == 2) {
 					if(XMC_GPIO_GetInput(COUNTER_IN2_PIN)) {
 						XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
 					} else {
 						XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
-					}				}
-				else if(pin == 3) {
+					}
+				}
+				else if(channel == 3) {
 					if(XMC_GPIO_GetInput(COUNTER_IN3_PIN)) {
 						XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
 					} else {

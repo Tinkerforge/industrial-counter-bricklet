@@ -34,10 +34,10 @@ void communication_tick(void);
 void communication_init(void);
 
 // Constants
-#define INDUSTRIAL_COUNTER_PIN_0 0
-#define INDUSTRIAL_COUNTER_PIN_1 1
-#define INDUSTRIAL_COUNTER_PIN_2 2
-#define INDUSTRIAL_COUNTER_PIN_3 3
+#define INDUSTRIAL_COUNTER_CHANNEL_0 0
+#define INDUSTRIAL_COUNTER_CHANNEL_1 1
+#define INDUSTRIAL_COUNTER_CHANNEL_2 2
+#define INDUSTRIAL_COUNTER_CHANNEL_3 3
 
 #define INDUSTRIAL_COUNTER_COUNT_EDGE_RISING 0
 #define INDUSTRIAL_COUNTER_COUNT_EDGE_FALLING 1
@@ -125,7 +125,7 @@ void communication_init(void);
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 } __attribute__((__packed__)) GetCounter;
 
 typedef struct {
@@ -144,7 +144,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 	int64_t counter;
 } __attribute__((__packed__)) SetCounter;
 
@@ -155,7 +155,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 } __attribute__((__packed__)) GetSignalData;
 
 typedef struct {
@@ -163,7 +163,7 @@ typedef struct {
 	uint16_t duty_cycle;
 	uint64_t period;
 	uint32_t frequency;
-	bool pin_value;
+	bool value;
 } __attribute__((__packed__)) GetSignalData_Response;
 
 typedef struct {
@@ -175,12 +175,12 @@ typedef struct {
 	uint16_t duty_cycle[4];
 	uint64_t period[4];
 	uint32_t frequency[4];
-	uint8_t pin_value;
+	uint8_t value;
 } __attribute__((__packed__)) GetAllSignalData_Response;
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 	bool active;
 } __attribute__((__packed__)) SetCounterActive;
 
@@ -191,7 +191,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 } __attribute__((__packed__)) GetCounterActive;
 
 typedef struct {
@@ -210,7 +210,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 	uint8_t count_edge;
 	uint8_t count_direction;
 	uint8_t duty_cycle_prescaler;
@@ -219,7 +219,7 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t pin;
+	uint8_t channel;
 } __attribute__((__packed__)) GetCounterConfiguration;
 
 typedef struct {
@@ -288,7 +288,7 @@ typedef struct {
 	uint16_t duty_cycle[4];
 	uint64_t period[4];
 	uint32_t frequency[4];
-	uint8_t pin_value;
+	uint8_t value;
 } __attribute__((__packed__)) AllSignalData_Callback;
 
 
