@@ -54,7 +54,7 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 
 
 BootloaderHandleMessageResponse get_counter(const GetCounter *data, GetCounter_Response *response) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -80,7 +80,7 @@ BootloaderHandleMessageResponse set_counter(const SetCounter *data) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -118,7 +118,7 @@ BootloaderHandleMessageResponse set_all_counter(const SetAllCounter *data) {
 }
 
 BootloaderHandleMessageResponse get_signal_data(const GetSignalData *data, GetSignalData_Response *response) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -156,7 +156,7 @@ BootloaderHandleMessageResponse get_all_signal_data(const GetAllSignalData *data
 }
 
 BootloaderHandleMessageResponse set_counter_active(const SetCounterActive *data) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -185,7 +185,7 @@ BootloaderHandleMessageResponse set_all_counter_active(const SetAllCounterActive
 }
 
 BootloaderHandleMessageResponse get_counter_active(const GetCounterActive *data, GetCounterActive_Response *response) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -203,7 +203,7 @@ BootloaderHandleMessageResponse get_all_counter_active(const GetAllCounterActive
 }
 
 BootloaderHandleMessageResponse set_counter_configuration(const SetCounterConfiguration *data) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -217,7 +217,7 @@ BootloaderHandleMessageResponse set_counter_configuration(const SetCounterConfig
 }
 
 BootloaderHandleMessageResponse get_counter_configuration(const GetCounterConfiguration *data, GetCounterConfiguration_Response *response) {
-	if(data->channel > COUNTER_NUM) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -253,7 +253,7 @@ BootloaderHandleMessageResponse get_all_signal_data_callback_configuration(const
 }
 
 BootloaderHandleMessageResponse set_channel_led_config(const SetChannelLEDConfig *data) {
-	if(data->channel > COUNTER_NUM - 1) {
+	if(data->channel >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
@@ -265,7 +265,7 @@ BootloaderHandleMessageResponse set_channel_led_config(const SetChannelLEDConfig
 BootloaderHandleMessageResponse get_channel_led_config(const GetChannelLEDConfig *data, GetChannelLEDConfig_Response *response) {
 	response->header.length = sizeof(GetChannelLEDConfig_Response);
 
-	if(data->led > COUNTER_NUM - 1) {
+	if(data->led >= COUNTER_NUM) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
