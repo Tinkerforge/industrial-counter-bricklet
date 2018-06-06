@@ -23,6 +23,7 @@
 
 #include "bricklib2/utility/communication_callback.h"
 #include "bricklib2/protocols/tfp/tfp.h"
+#include "bricklib2/hal/system_timer/system_timer.h"
 
 #include "counter.h"
 
@@ -231,23 +232,31 @@ BootloaderHandleMessageResponse get_counter_configuration(const GetCounterConfig
 }
 
 BootloaderHandleMessageResponse set_all_counter_callback_configuration(const SetAllCounterCallbackConfiguration *data) {
+	counter.cb_counter_period              = data->period;
+	counter.cb_counter_value_has_to_change = data->value_has_to_change;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
 BootloaderHandleMessageResponse get_all_counter_callback_configuration(const GetAllCounterCallbackConfiguration *data, GetAllCounterCallbackConfiguration_Response *response) {
-	response->header.length = sizeof(GetAllCounterCallbackConfiguration_Response);
+	response->header.length       = sizeof(GetAllCounterCallbackConfiguration_Response);
+	response->period              = counter.cb_counter_period;
+	response->value_has_to_change = counter.cb_counter_value_has_to_change;
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
 BootloaderHandleMessageResponse set_all_signal_data_callback_configuration(const SetAllSignalDataCallbackConfiguration *data) {
+	counter.cb_signal_period              = data->period;
+	counter.cb_signal_value_has_to_change = data->value_has_to_change;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
 BootloaderHandleMessageResponse get_all_signal_data_callback_configuration(const GetAllSignalDataCallbackConfiguration *data, GetAllSignalDataCallbackConfiguration_Response *response) {
-	response->header.length = sizeof(GetAllSignalDataCallbackConfiguration_Response);
+	response->header.length       = sizeof(GetAllSignalDataCallbackConfiguration_Response);
+	response->period              = counter.cb_signal_period;
+	response->value_has_to_change = counter.cb_signal_value_has_to_change;
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
@@ -278,11 +287,36 @@ bool handle_all_counter_callback(void) {
 	static bool is_buffered = false;
 	static AllCounter_Callback cb;
 
-	if(!is_buffered) {
-		tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllCounter_Callback), FID_CALLBACK_ALL_COUNTER);
-		// TODO: Implement AllCounter callback handling
+	static uint32_t last_time = 0;
+	static int64_t last_counter[4] = {0, 0, 0, 0};
 
-		return false;
+	if(!is_buffered) {
+		if(counter.cb_counter_period != 0) {
+			if(system_timer_is_time_elapsed_ms(last_time, counter.cb_counter_period)) {
+				uint64_t new_counter[4];
+				for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+					new_counter[channel] = counter_get_count(channel);
+				}
+
+				if((!counter.cb_counter_value_has_to_change) ||
+				   (last_counter[0] != new_counter[0])       ||
+				   (last_counter[1] != new_counter[1])       ||
+				   (last_counter[2] != new_counter[2])       ||
+				   (last_counter[3] != new_counter[3])) {
+					last_time = system_timer_get_ms();
+					tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllCounter_Callback), FID_CALLBACK_ALL_COUNTER);
+					for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+						cb.counter[channel] = new_counter[channel];
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	if(bootloader_spitfp_is_send_possible(&bootloader_status.st)) {
@@ -300,11 +334,64 @@ bool handle_all_signal_data_callback(void) {
 	static bool is_buffered = false;
 	static AllSignalData_Callback cb;
 
-	if(!is_buffered) {
-		tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllSignalData_Callback), FID_CALLBACK_ALL_SIGNAL_DATA);
-		// TODO: Implement AllSignalData callback handling
+	static uint32_t last_time = 0;
 
-		return false;
+	static uint16_t duty_cycle[4] = {0, 0, 0, 0};
+	static uint64_t period[4] = {0, 0, 0, 0};
+	static uint32_t frequency[4] = {0, 0, 0, 0};
+	static uint8_t value = 0;
+
+	if(!is_buffered) {
+		if(counter.cb_signal_period != 0) {
+			if(system_timer_is_time_elapsed_ms(last_time, counter.cb_signal_period)) {
+				uint16_t new_duty_cycle[4];
+				uint64_t new_period[4];
+				uint32_t new_frequency[4];
+				uint8_t new_value = 0;
+
+				for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+					uint16_t duty_cycle;
+					uint64_t period;
+
+					counter_get_duty_cycle_and_period(channel, &duty_cycle, &period);
+
+					new_duty_cycle[channel] = duty_cycle;
+					new_period[channel] = period;
+					new_frequency[channel] = counter_get_frequency(channel);
+					new_value |= counter_get_value(channel) << channel;
+				}
+
+				if((!counter.cb_signal_value_has_to_change) ||
+				   (duty_cycle[0] != new_duty_cycle[0])     ||
+				   (period[0]     != new_period[0])         ||
+				   (frequency[0]  != new_frequency[0])      ||
+				   (duty_cycle[1] != new_duty_cycle[1])     ||
+				   (period[1]     != new_period[1])         ||
+				   (frequency[1]  != new_frequency[1])      ||
+				   (duty_cycle[2] != new_duty_cycle[2])     ||
+				   (period[2]     != new_period[2])         ||
+				   (frequency[2]  != new_frequency[2])      ||
+				   (duty_cycle[3] != new_duty_cycle[3])     ||
+				   (period[3]     != new_period[3])         ||
+				   (frequency[3]  != new_frequency[3])      ||
+				   (value         != new_value)) {
+					last_time = system_timer_get_ms();
+					tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllSignalData_Callback), FID_CALLBACK_ALL_SIGNAL_DATA);
+					for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
+						cb.duty_cycle[channel] = new_duty_cycle[channel];
+						cb.period[channel]     = new_period[channel];
+						cb.frequency[channel]  = new_frequency[channel];
+						cb.value               = new_value;
+					}
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	if(bootloader_spitfp_is_send_possible(&bootloader_status.st)) {

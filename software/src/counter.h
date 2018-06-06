@@ -51,6 +51,12 @@ typedef struct {
 	uint32_t last_cv3[COUNTER_NUM];
 
 	INFO_LED_CONFIG_t info_leds[COUNTER_NUM];
+
+	uint32_t cb_counter_period;
+	bool cb_counter_value_has_to_change;
+
+	uint32_t cb_signal_period;
+	bool cb_signal_value_has_to_change;
 } Counter;
 
 void counter_init(void);
