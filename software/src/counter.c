@@ -182,6 +182,10 @@ void counter_counter_init_0(const bool first) {
 	};
 	XMC_CCU4_SLICE_ConfigureEvent(COUNTER_IN0_SLICE0, XMC_CCU4_SLICE_EVENT_1, &event1_config0);
 
+	uint8_t duty_cycle_prescaler = counter.config_duty_cycle_prescaler[0];
+	if(duty_cycle_prescaler == INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_AUTO) {
+		duty_cycle_prescaler = counter.config_duty_cycle_prescaler[0];
+	}
 
 	// Set capture config for calculation of duty cycle
 	const XMC_CCU4_SLICE_CAPTURE_CONFIG_t capture_config = {
@@ -190,7 +194,7 @@ void counter_counter_init_0(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cycle_prescaler[0],
+		.prescaler_initval   = duty_cycle_prescaler,
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -335,8 +339,13 @@ void counter_counter_init_0(const bool first) {
 		.timer_concatenation = true
 	};
 
+	uint8_t frequency_integration_time = counter.config_frequency_integration_time[0];
+	if(frequency_integration_time == INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO) {
+		frequency_integration_time = counter.config_frequency_integration_time_auto[0];
+	}
+
 	XMC_CCU4_SLICE_CompareInit(COUNTER_IN0_SLICE3, &timer0_config3);
-	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN0_SLICE3, 1 << (counter.config_frequency_integration_time[0] + 7));
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN0_SLICE3, 1 << (frequency_integration_time + 7));
 	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN0_SLICE3, 0);
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN0_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_3 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -444,6 +453,10 @@ void counter_counter_init_1(const bool first) {
 	};
 	XMC_CCU8_SLICE_ConfigureEvent(COUNTER_IN1_SLICE0, XMC_CCU8_SLICE_EVENT_1, &event1_config0);
 
+	uint8_t duty_cycle_prescaler = counter.config_duty_cycle_prescaler[1];
+	if(duty_cycle_prescaler == INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_AUTO) {
+		duty_cycle_prescaler = counter.config_duty_cycle_prescaler[1];
+	}
 
 	// Set capture config for calculation of duty cycle
 	const XMC_CCU8_SLICE_CAPTURE_CONFIG_t capture_config = {
@@ -452,7 +465,7 @@ void counter_counter_init_1(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU8_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cycle_prescaler[1],
+		.prescaler_initval   = duty_cycle_prescaler,
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -631,8 +644,13 @@ void counter_counter_init_1(const bool first) {
 		.timer_concatenation = true
 	};
 
+	uint8_t frequency_integration_time = counter.config_frequency_integration_time[1];
+	if(frequency_integration_time == INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO) {
+		frequency_integration_time = counter.config_frequency_integration_time_auto[1];
+	}
+
 	XMC_CCU8_SLICE_CompareInit(COUNTER_IN1_SLICE3, &timer0_config3);
-	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN1_SLICE3, 1 << (counter.config_frequency_integration_time[1] + 7));
+	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN1_SLICE3, 1 << (frequency_integration_time + 7));
 	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN1_SLICE3, 0);
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN1_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_3 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -753,6 +771,10 @@ void counter_counter_init_2(const bool first) {
 	};
 	XMC_CCU8_SLICE_ConfigureEvent(COUNTER_IN2_SLICE0, XMC_CCU8_SLICE_EVENT_1, &event1_config0);
 
+	uint8_t duty_cycle_prescaler = counter.config_duty_cycle_prescaler[2];
+	if(duty_cycle_prescaler == INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_AUTO) {
+		duty_cycle_prescaler = counter.config_duty_cycle_prescaler[2];
+	}
 
 	// Set capture config for calculation of duty cycle
 	const XMC_CCU8_SLICE_CAPTURE_CONFIG_t capture_config = {
@@ -761,7 +783,7 @@ void counter_counter_init_2(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU8_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cycle_prescaler[1],
+		.prescaler_initval   = duty_cycle_prescaler,
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -940,8 +962,13 @@ void counter_counter_init_2(const bool first) {
 		.timer_concatenation = true
 	};
 
+	uint8_t frequency_integration_time = counter.config_frequency_integration_time[2];
+	if(frequency_integration_time == INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO) {
+		frequency_integration_time = counter.config_frequency_integration_time_auto[2];
+	}
+
 	XMC_CCU8_SLICE_CompareInit(COUNTER_IN2_SLICE3, &timer0_config3);
-	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN2_SLICE3, 1 << (counter.config_frequency_integration_time[2] + 7));
+	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN2_SLICE3, 1 << (frequency_integration_time + 7));
 	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN2_SLICE3, 0);
 	XMC_CCU8_EnableShadowTransfer(COUNTER_IN2_MODULE, XMC_CCU8_SHADOW_TRANSFER_SLICE_3 | XMC_CCU8_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -1051,6 +1078,10 @@ void counter_counter_init_3(const bool first) {
 	};
 	XMC_CCU4_SLICE_ConfigureEvent(COUNTER_IN3_SLICE0, XMC_CCU4_SLICE_EVENT_1, &event1_config0);
 
+	uint8_t duty_cycle_prescaler = counter.config_duty_cycle_prescaler[3];
+	if(duty_cycle_prescaler == INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_AUTO) {
+		duty_cycle_prescaler = counter.config_duty_cycle_prescaler[3];
+	}
 
 	// Set capture config for calculation of duty cycle
 	const XMC_CCU4_SLICE_CAPTURE_CONFIG_t capture_config = {
@@ -1059,7 +1090,7 @@ void counter_counter_init_3(const bool first) {
 		.same_event          = 0,
 		.ignore_full_flag    = 0,
 		.prescaler_mode      = XMC_CCU4_SLICE_PRESCALER_MODE_NORMAL,
-		.prescaler_initval   = counter.config_duty_cycle_prescaler[3],
+		.prescaler_initval   = duty_cycle_prescaler,
 		.float_limit         = 15,
 		.timer_concatenation = 0U
 	};
@@ -1206,8 +1237,13 @@ void counter_counter_init_3(const bool first) {
 		.timer_concatenation = true
 	};
 
+	uint8_t frequency_integration_time = counter.config_frequency_integration_time[3];
+	if(frequency_integration_time == INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO) {
+		frequency_integration_time = counter.config_frequency_integration_time_auto[3];
+	}
+
 	XMC_CCU4_SLICE_CompareInit(COUNTER_IN3_SLICE3, &timer0_config3);
-	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE3, 1 << (counter.config_frequency_integration_time[3] + 7));
+	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE3, 1 << (frequency_integration_time + 7));
 	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE3, 0);
 	XMC_CCU4_EnableShadowTransfer(COUNTER_IN3_MODULE, XMC_CCU4_SHADOW_TRANSFER_SLICE_3 | XMC_CCU4_SHADOW_TRANSFER_PRESCALER_SLICE_3);
 
@@ -1273,16 +1309,18 @@ void counter_init(void) {
 	XMC_GPIO_Init(COUNTER_IN2_POSIF_PIN, &counter_pin_config);
 
 	for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
-		counter.config_update[channel]                     = false;
-		counter.config_count_edge[channel]                 = INDUSTRIAL_COUNTER_COUNT_EDGE_RISING;
-		counter.config_count_direction[channel]            = INDUSTRIAL_COUNTER_COUNT_DIRECTION_UP;
-		counter.config_duty_cycle_prescaler[channel]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
-		counter.config_frequency_integration_time[channel] = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
-		counter.config_active[channel]                     = true;
-		counter.last_duty_cycle[channel]                   = 0;
-		counter.last_period[channel]                       = 0;
-		counter.last_cv1[channel]                          = 0;
-		counter.last_cv3[channel]                          = 0;
+		counter.config_update[channel]                          = false;
+		counter.config_count_edge[channel]                      = INDUSTRIAL_COUNTER_COUNT_EDGE_RISING;
+		counter.config_count_direction[channel]                 = INDUSTRIAL_COUNTER_COUNT_DIRECTION_UP;
+		counter.config_duty_cycle_prescaler[channel]            = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
+		counter.config_duty_cycle_prescaler_auto[channel]       = INDUSTRIAL_COUNTER_DUTY_CYCLE_PRESCALER_1;
+		counter.config_frequency_integration_time[channel]      = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
+		counter.config_frequency_integration_time_auto[channel] = INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_1024_MS;
+		counter.config_active[channel]                          = true;
+		counter.last_duty_cycle[channel]                        = 0;
+		counter.last_period[channel]                            = 0;
+		counter.last_cv1[channel]                               = 0;
+		counter.last_cv3[channel]                               = 0;
 
 		counter_counter_init(channel, true);
 
@@ -1499,7 +1537,12 @@ uint32_t counter_get_frequency(const uint8_t channel) {
 		case 3: NVIC_DisableIRQ(16); current = counter_frequency_current3; before = counter_frequency_before3; NVIC_EnableIRQ(16); break;
 	}
 
-	uint32_t frequency = ((llabs(current - before))*125*125) >> (counter.config_frequency_integration_time[channel] + 1);
+	uint8_t frequency_integration_time = counter.config_frequency_integration_time[channel];
+	if(frequency_integration_time == INDUSTRIAL_COUNTER_FREQUENCY_INTEGRATION_TIME_AUTO) {
+		frequency_integration_time = counter.config_frequency_integration_time_auto[channel];
+	}
+
+	uint32_t frequency = ((llabs(current - before))*125*125) >> (frequency_integration_time + 1);
 	if(counter.config_count_edge[channel] == INDUSTRIAL_COUNTER_COUNT_EDGE_BOTH) {
 		frequency >>= 1;
 	}

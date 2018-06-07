@@ -45,6 +45,9 @@ typedef struct {
 	uint8_t config_frequency_integration_time[COUNTER_NUM];
 	bool config_active[COUNTER_NUM];
 
+	uint8_t config_duty_cycle_prescaler_auto[COUNTER_NUM];
+	uint8_t config_frequency_integration_time_auto[COUNTER_NUM];
+
 	uint16_t last_duty_cycle[COUNTER_NUM];
 	uint64_t last_period[COUNTER_NUM];
 	uint32_t last_cv1[COUNTER_NUM];
