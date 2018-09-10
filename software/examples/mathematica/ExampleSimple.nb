@@ -1,0 +1,42 @@
+Notebook[{
+ Cell[
+  BoxData[{
+   RowBox[{"Needs", "[", "\"\<NETLink`\>\"", "]"}],
+   RowBox[{"LoadNETAssembly", "[", RowBox[{"\"\<Tinkerforge\>\"", ",", RowBox[{RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<../../..\>\""}]}], "]"}]
+  }], "Input"
+ ],
+ Cell[
+  BoxData[{
+   RowBox[{"host", "=", "\"\<localhost\>\""}],
+   RowBox[{"port", "=", "4223"}],
+   RowBox[{"uid", "=", "\"\<XYZ\>\"", RowBox[{"(*", "Change XYZ to the UID of your Industrial Counter Bricklet", "*)"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Create IPConnection and device object", "*)"}],
+   RowBox[{"ipcon", "=", RowBox[{"NETNew", "[", "\"\<Tinkerforge.IPConnection\>\"", "]"}]}],
+   RowBox[{"ic", "=", RowBox[{"NETNew", "[", RowBox[{"\"\<Tinkerforge.BrickletIndustrialCounter\>\"", ",", "uid", ",", "ipcon"}], "]"}]}],
+   RowBox[{"ipcon", "@", RowBox[{"Connect", "[", RowBox[{"host", ",", "port"}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Get current counter from channel 0", "*)"}],
+   RowBox[{"Print", "[", RowBox[{"\"\<Counter (Channel 0): \>\"", "<>", RowBox[{"ToString", "[", RowBox[{"ic", "@", RowBox[{"GetCounter", "[", "Tinkerforge`BrickletIndustrialCounter`CHANNELU0", "]"}]}], "]"}]}], "]"}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Get current signal data from channel 0", "*)"}],
+   RowBox[{"dutyCycle", "=", "0", ";", "period", "=", "0", ";", "frequency", "=", "0", ";", "value", "=", "0"}],
+   RowBox[{"ic", "@", RowBox[{"GetSignalData", "[", RowBox[{"Tinkerforge`BrickletIndustrialCounter`CHANNELU0", ",", "dutyCycle", ",", "period", ",", "frequency", ",", "value"}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"Print", "[", RowBox[{"\"\<Duty Cycle (Channel 0): \>\"", "<>", RowBox[{"ToString", "[", RowBox[{"N", "[", RowBox[{"Quantity", "[", RowBox[{"dutyCycle", ",", "\"\<%/100\>\""}], "]"}], "]"}], "]"}]}], "]"}],
+   RowBox[{"Print", "[", RowBox[{"\"\<Period (Channel 0): \>\"", "<>", RowBox[{"ToString", "[", RowBox[{"N", "[", RowBox[{"Quantity", "[", RowBox[{"period", ",", "\"\<ns\>\""}], "]"}], "]"}], "]"}]}], "]"}],
+   RowBox[{"Print", "[", RowBox[{"\"\<Frequency (Channel 0): \>\"", "<>", RowBox[{"ToString", "[", RowBox[{"N", "[", RowBox[{"Quantity", "[", RowBox[{"frequency", ",", "\"\<Hz/1000\>\""}], "]"}], "]"}], "]"}]}], "]"}],
+   RowBox[{"Print", "[", RowBox[{"\"\<Value (Channel 0): \>\"", "<>", RowBox[{"ToString", "[", "value", "]"}]}], "]"}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Clean up", "*)"}],
+   RowBox[{"ipcon", "@", RowBox[{"Disconnect", "[", "]"}]}],
+   RowBox[{"ReleaseNETObject", "[", "ic", "]"}],
+   RowBox[{"ReleaseNETObject", "[", "ipcon", "]"}]
+  }], "Input"
+ ]
+}]
