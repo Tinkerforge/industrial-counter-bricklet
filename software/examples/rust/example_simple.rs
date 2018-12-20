@@ -18,12 +18,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Counter (Channel 0): {}", counter);
 
     // Get current signal data from channel 0.
-    let get_signal_data_result = ic.get_signal_data(INDUSTRIAL_COUNTER_BRICKLET_CHANNEL_0).recv()?;
+    let signal_data = ic.get_signal_data(INDUSTRIAL_COUNTER_BRICKLET_CHANNEL_0).recv()?;
 
-    println!("Duty Cycle (Channel 0): {} %", get_signal_data_result.duty_cycle as f32 / 100.0);
-    println!("Period (Channel 0): {} ns", get_signal_data_result.period);
-    println!("Frequency (Channel 0): {} Hz", get_signal_data_result.frequency as f32 / 1000.0);
-    println!("Value (Channel 0): {}", get_signal_data_result.value);
+    println!("Duty Cycle (Channel 0): {} %", signal_data.duty_cycle as f32 / 100.0);
+    println!("Period (Channel 0): {} ns", signal_data.period);
+    println!("Frequency (Channel 0): {} Hz", signal_data.frequency as f32 / 1000.0);
+    println!("Value (Channel 0): {}", signal_data.value);
 
     println!("Press enter to exit.");
     let mut _input = String::new();
