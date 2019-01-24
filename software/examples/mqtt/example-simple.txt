@@ -1,0 +1,11 @@
+
+
+# Change XYZ to the UID of your Industrial Counter Bricklet
+
+setup:
+	# Get current counter from channel 0
+	subscribe to tinkerforge/response/industrial_counter/XYZ/get_counter
+	publish '{ "channel": "0"}' to tinkerforge/request/industrial_counter_bricklet/XYZ/get_counter 
+	# Get current signal data from channel 0
+	subscribe to tinkerforge/response/industrial_counter/XYZ/get_signal_data
+	publish '{ "channel": "0"}' to tinkerforge/request/industrial_counter_bricklet/XYZ/get_signal_data 
