@@ -22,11 +22,31 @@
 #ifndef CONFIG_COUNTER_H
 #define CONFIG_COUNTER_H
 
+#define COUNTER_STATUS0_LED_PIN_PORT     XMC_GPIO_PORT4
+#define COUNTER_STATUS1_LED_PIN_PORT     XMC_GPIO_PORT4
+#define COUNTER_STATUS2_LED_PIN_PORT     XMC_GPIO_PORT4
+#define COUNTER_STATUS3_LED_PIN_PORT     XMC_GPIO_PORT4
+
+#define COUNTER_STATUS0_LED_PIN_NUM      7
+#define COUNTER_STATUS1_LED_PIN_NUM      6
+#define COUNTER_STATUS2_LED_PIN_NUM      5
+#define COUNTER_STATUS3_LED_PIN_NUM      4
+
 #define COUNTER_STATUS0_LED_PIN          P4_7
 #define COUNTER_STATUS1_LED_PIN          P4_6
 #define COUNTER_STATUS2_LED_PIN          P4_5
 #define COUNTER_STATUS3_LED_PIN          P4_4
 
+
+#define COUNTER_IN0_PIN_PORT             XMC_GPIO_PORT0
+#define COUNTER_IN1_PIN_PORT             XMC_GPIO_PORT0
+#define COUNTER_IN2_PIN_PORT             XMC_GPIO_PORT3
+#define COUNTER_IN3_PIN_PORT             XMC_GPIO_PORT0
+
+#define COUNTER_IN0_PIN_NUM              4
+#define COUNTER_IN1_PIN_NUM              12
+#define COUNTER_IN2_PIN_NUM              0
+#define COUNTER_IN3_PIN_NUM              0
 
 #define COUNTER_IN0_PIN                  P0_4
 #define COUNTER_IN1_PIN                  P0_12

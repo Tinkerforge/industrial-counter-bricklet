@@ -37,6 +37,34 @@
 
 #include <stdlib.h>
 
+const XMC_GPIO_PORT_t *counter_status_led_pin_port[] = {
+	COUNTER_STATUS0_LED_PIN_PORT,
+	COUNTER_STATUS1_LED_PIN_PORT,
+	COUNTER_STATUS2_LED_PIN_PORT,
+	COUNTER_STATUS3_LED_PIN_PORT,
+};
+
+const uint8_t counter_status_led_pin_num[] = {
+	COUNTER_STATUS0_LED_PIN_NUM,
+	COUNTER_STATUS1_LED_PIN_NUM,
+	COUNTER_STATUS2_LED_PIN_NUM,
+	COUNTER_STATUS3_LED_PIN_NUM,
+};
+
+const XMC_GPIO_PORT_t *counter_in_pin_port[] = {
+	COUNTER_IN0_PIN_PORT,
+	COUNTER_IN1_PIN_PORT,
+	COUNTER_IN2_PIN_PORT,
+	COUNTER_IN3_PIN_PORT,
+};
+
+const uint8_t counter_in_pin_num[] = {
+	COUNTER_IN0_PIN_NUM,
+	COUNTER_IN1_PIN_NUM,
+	COUNTER_IN2_PIN_NUM,
+	COUNTER_IN3_PIN_NUM,
+};
+
 Counter counter;
 
 // Keep the overflows as single global variables to be sure that the compiler
@@ -1561,88 +1589,28 @@ void counter_tick(void) {
 		switch (counter.info_leds[channel].config) {
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_OFF:
 				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
-
-				if(channel == 0) {
-					XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
-				}
-				else if(channel == 1) {
-					XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
-				}
-				else if(channel == 2) {
-					XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
-				}
-				else if(channel == 3) {
-					XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
-				}
+				XMC_GPIO_SetOutputHigh(counter_status_led_pin_port[channel], counter_status_led_pin_num[channel]);
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_ON:
 				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_ON;
-
-				if(channel == 0) {
-					XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
-				}
-				else if(channel == 1) {
-					XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
-				}
-				else if(channel == 2) {
-					XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
-				}
-				else if(channel == 3) {
-					XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
-				}
+				XMC_GPIO_SetOutputLow(counter_status_led_pin_port[channel], counter_status_led_pin_num[channel]);
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_HEARTBEAT:
 				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_HEARTBEAT;
-
-				if(channel == 0) {
-					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS0_LED_PIN);
-				}
-				else if(channel == 1) {
-					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS1_LED_PIN);
-				}
-				else if(channel == 2) {
-					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS2_LED_PIN);
-				}
-				else if(channel == 3) {
-					led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), COUNTER_STATUS3_LED_PIN);
-				}
+				led_flicker_tick(&counter.info_leds[channel].info_led_flicker_state, system_timer_get_ms(), counter_status_led_pin_port[channel], counter_status_led_pin_num[channel]);
 
 				break;
 
 			case INDUSTRIAL_COUNTER_STATUS_LED_CONFIG_SHOW_STATUS:
 				counter.info_leds[channel].info_led_flicker_state.config = LED_FLICKER_CONFIG_OFF;
-
-				if(channel == 0) {
-					if(XMC_GPIO_GetInput(COUNTER_IN0_PIN)) {
-						XMC_GPIO_SetOutputHigh(COUNTER_STATUS0_LED_PIN);
-					} else {
-						XMC_GPIO_SetOutputLow(COUNTER_STATUS0_LED_PIN);
-					}
-				}
-				else if(channel == 1) {
-					if(XMC_GPIO_GetInput(COUNTER_IN1_PIN)) {
-						XMC_GPIO_SetOutputHigh(COUNTER_STATUS1_LED_PIN);
-					} else {
-						XMC_GPIO_SetOutputLow(COUNTER_STATUS1_LED_PIN);
-					}
-				}
-				else if(channel == 2) {
-					if(XMC_GPIO_GetInput(COUNTER_IN2_PIN)) {
-						XMC_GPIO_SetOutputHigh(COUNTER_STATUS2_LED_PIN);
-					} else {
-						XMC_GPIO_SetOutputLow(COUNTER_STATUS2_LED_PIN);
-					}
-				}
-				else if(channel == 3) {
-					if(XMC_GPIO_GetInput(COUNTER_IN3_PIN)) {
-						XMC_GPIO_SetOutputHigh(COUNTER_STATUS3_LED_PIN);
-					} else {
-						XMC_GPIO_SetOutputLow(COUNTER_STATUS3_LED_PIN);
-					}
+				if(XMC_GPIO_GetInput(counter_in_pin_port[channel], counter_in_pin_num[channel])) {
+					XMC_GPIO_SetOutputHigh(counter_status_led_pin_port[channel], counter_status_led_pin_num[channel]);
+				} else {
+					XMC_GPIO_SetOutputLow(counter_status_led_pin_port[channel], counter_status_led_pin_num[channel]);
 				}
 
 				break;
