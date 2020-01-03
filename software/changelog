@@ -6,3 +6,6 @@
 
 2019-05-29: 2.0.2 (058e3fc)
 - Fix SPITFP IRQ race condition with other higher prio IRQs (through bricklib2)
+
+2020-01-03: 2.0.3 (TBD)
+- Fix erroneous value_has_to_chnage-logic for callbacks

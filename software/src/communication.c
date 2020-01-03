@@ -306,7 +306,8 @@ bool handle_all_counter_callback(void) {
 					last_time = system_timer_get_ms();
 					tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllCounter_Callback), FID_CALLBACK_ALL_COUNTER);
 					for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
-						cb.counter[channel] = new_counter[channel];
+						cb.counter[channel]   = new_counter[channel];
+						last_counter[channel] = new_counter[channel];
 					}
 				} else {
 					return false;
@@ -336,10 +337,10 @@ bool handle_all_signal_data_callback(void) {
 
 	static uint32_t last_time = 0;
 
-	static uint16_t duty_cycle[4] = {0, 0, 0, 0};
-	static uint64_t period[4] = {0, 0, 0, 0};
-	static uint32_t frequency[4] = {0, 0, 0, 0};
-	static uint8_t value = 0;
+	static uint16_t last_duty_cycle[4] = {0, 0, 0, 0};
+	static uint64_t last_period[4]     = {0, 0, 0, 0};
+	static uint32_t last_frequency[4]  = {0, 0, 0, 0};
+	static uint8_t  last_value         = 0;
 
 	if(!is_buffered) {
 		if(counter.cb_signal_period != 0) {
@@ -355,33 +356,37 @@ bool handle_all_signal_data_callback(void) {
 
 					counter_get_duty_cycle_and_period(channel, &duty_cycle, &period);
 
-					new_duty_cycle[channel] = duty_cycle;
-					new_period[channel] = period;
-					new_frequency[channel] = counter_get_frequency(channel);
-					new_value |= counter_get_value(channel) << channel;
+					new_duty_cycle[channel]  = duty_cycle;
+					new_period[channel]      = period;
+					new_frequency[channel]   = counter_get_frequency(channel);
+					new_value               |= counter_get_value(channel) << channel;
 				}
 
-				if((!counter.cb_signal_value_has_to_change) ||
-				   (duty_cycle[0] != new_duty_cycle[0])     ||
-				   (period[0]     != new_period[0])         ||
-				   (frequency[0]  != new_frequency[0])      ||
-				   (duty_cycle[1] != new_duty_cycle[1])     ||
-				   (period[1]     != new_period[1])         ||
-				   (frequency[1]  != new_frequency[1])      ||
-				   (duty_cycle[2] != new_duty_cycle[2])     ||
-				   (period[2]     != new_period[2])         ||
-				   (frequency[2]  != new_frequency[2])      ||
-				   (duty_cycle[3] != new_duty_cycle[3])     ||
-				   (period[3]     != new_period[3])         ||
-				   (frequency[3]  != new_frequency[3])      ||
-				   (value         != new_value)) {
+				if((!counter.cb_signal_value_has_to_change)   ||
+				   (last_duty_cycle[0] != new_duty_cycle[0])  ||
+				   (last_period[0]     != new_period[0])      ||
+				   (last_frequency[0]  != new_frequency[0])   ||
+				   (last_duty_cycle[1] != new_duty_cycle[1])  ||
+				   (last_period[1]     != new_period[1])      ||
+				   (last_frequency[1]  != new_frequency[1])   ||
+				   (last_duty_cycle[2] != new_duty_cycle[2])  ||
+				   (last_period[2]     != new_period[2])      ||
+				   (last_frequency[2]  != new_frequency[2])   ||
+				   (last_duty_cycle[3] != new_duty_cycle[3])  ||
+				   (last_period[3]     != new_period[3])      ||
+				   (last_frequency[3]  != new_frequency[3])   ||
+				   (last_value         != new_value)) {
 					last_time = system_timer_get_ms();
 					tfp_make_default_header(&cb.header, bootloader_get_uid(), sizeof(AllSignalData_Callback), FID_CALLBACK_ALL_SIGNAL_DATA);
 					for(uint8_t channel = 0; channel < COUNTER_NUM; channel++) {
-						cb.duty_cycle[channel] = new_duty_cycle[channel];
-						cb.period[channel]     = new_period[channel];
-						cb.frequency[channel]  = new_frequency[channel];
-						cb.value               = new_value;
+						cb.duty_cycle[channel]   = new_duty_cycle[channel];
+						cb.period[channel]       = new_period[channel];
+						cb.frequency[channel]    = new_frequency[channel];
+						cb.value                 = new_value;
+						last_duty_cycle[channel] = new_duty_cycle[channel];
+						last_period[channel]     = new_period[channel];
+						last_frequency[channel]  = new_frequency[channel];
+						last_value               = new_value;
 					}
 				} else {
 					return false;
