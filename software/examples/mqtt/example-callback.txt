@@ -1,0 +1,9 @@
+# Change XYZ to the UID of your Industrial Counter Bricklet
+
+setup:
+	# Handle incoming all counter callbacks
+	subscribe to tinkerforge/callback/industrial_counter_bricklet/XYZ/all_counter
+	publish '{"register": true}' to tinkerforge/register/industrial_counter_bricklet/XYZ/all_counter # Register all_counter callback
+	
+	# Set period for all counter callback to 1s (1000ms)
+	publish '{"period": 1000, "value_has_to_change": true}' to tinkerforge/request/industrial_counter_bricklet/XYZ/set_all_counter_callback_configuration

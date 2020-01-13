@@ -1,0 +1,32 @@
+Needs["NETLink`"]
+LoadNETAssembly["Tinkerforge",NotebookDirectory[]<>"../../.."]
+
+host="localhost"
+port=4223
+uid="XYZ"(*Change XYZ to the UID of your Industrial Counter Bricklet*)
+
+(*Create IPConnection and device object*)
+ipcon=NETNew["Tinkerforge.IPConnection"]
+ic=NETNew["Tinkerforge.BrickletIndustrialCounter",uid,ipcon]
+ipcon@Connect[host,port]
+
+(*Callback function for all counter callback*)
+AllCounterCB[sender_,{counter1_,counter2_,counter3_,counter4_}]:=
+ Module[{},
+  Print["Counter (Channel 0): "<>ToString[counter1]];
+  Print["Counter (Channel 1): "<>ToString[counter2]];
+  Print["Counter (Channel 2): "<>ToString[counter3]];
+  Print["Counter (Channel 3): "<>ToString[counter4]]
+ ]
+
+AddEventHandler[ic@AllCounterCallback,AllCounterCB]
+
+(*Set period for all counter callback to 1s (1000ms)*)
+ic@SetAllCounterCallbackConfiguration[1000,True]
+
+Input["Click OK to exit"]
+
+(*Clean up*)
+ipcon@Disconnect[]
+ReleaseNETObject[ic]
+ReleaseNETObject[ipcon]
