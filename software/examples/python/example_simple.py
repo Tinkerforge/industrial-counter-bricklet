@@ -27,5 +27,5 @@ if __name__ == "__main__":
     print("Frequency (Channel 0): " + str(frequency/1000.0) + " Hz")
     print("Value (Channel 0): " + str(value))
 
-    raw_input("Press key to exit\n") # Use input() in Python 3
+    input("Press key to exit\n") # Use raw_input() in Python 2
     ipcon.disconnect()
