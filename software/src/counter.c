@@ -267,7 +267,7 @@ void counter_counter_init_0(const bool first) {
 
 	// Set the period/compare values
 	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN0_SLICE1, 0xFFFF);
-	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN0_SLICE1, 0); // Will be overwritten with correct value at the end of initialization
+	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN0_SLICE1, 2);
 
 	// Transfer configuration through shadow register
 	XMC_CCU4_SetMultiChannelShadowTransferMode(COUNTER_IN0_MODULE, (uint32_t)XMC_CCU4_MULTI_CHANNEL_SHADOW_TRANSFER_SW_SLICE1);
@@ -549,7 +549,7 @@ void counter_counter_init_1(const bool first) {
 
 	// Set the period/compare values
 	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN1_SLICE1, 0xFFFF);
-	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN1_SLICE1, 0); // Will be overwritten with correct value at the end of initialization
+	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN1_SLICE1, 2);
 
 	// Transfer configuration through shadow register
 	XMC_CCU8_SetMultiChannelShadowTransferMode(COUNTER_IN1_MODULE, (uint32_t)XMC_CCU8_MULTI_CHANNEL_SHADOW_TRANSFER_SW_SLICE1);
@@ -867,7 +867,7 @@ void counter_counter_init_2(const bool first) {
 
 	// Set the period/compare values
 	XMC_CCU8_SLICE_SetTimerPeriodMatch(COUNTER_IN2_SLICE1, 0xFFFF);
-	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN2_SLICE1, 0); // Will be overwritten with correct value at the end of initialization
+	XMC_CCU8_SLICE_SetTimerCompareMatchChannel1(COUNTER_IN2_SLICE1, 2);
 
 	// Transfer configuration through shadow register
 	XMC_CCU8_SetMultiChannelShadowTransferMode(COUNTER_IN2_MODULE, (uint32_t)XMC_CCU8_MULTI_CHANNEL_SHADOW_TRANSFER_SW_SLICE1);
@@ -1163,7 +1163,7 @@ void counter_counter_init_3(const bool first) {
 
 	// Set the period/compare values
 	XMC_CCU4_SLICE_SetTimerPeriodMatch(COUNTER_IN3_SLICE1, 0xFFFF);
-	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE1, 0); // Will be overwritten with correct value at the end of initialization
+	XMC_CCU4_SLICE_SetTimerCompareMatch(COUNTER_IN3_SLICE1, 2);
 
 	// Transfer configuration through shadow register
 	XMC_CCU4_SetMultiChannelShadowTransferMode(COUNTER_IN3_MODULE, (uint32_t)XMC_CCU4_MULTI_CHANNEL_SHADOW_TRANSFER_SW_SLICE1);
@@ -1212,7 +1212,7 @@ void counter_counter_init_3(const bool first) {
 	XMC_CCU4_SLICE_SetInterruptNode(COUNTER_IN3_SLICE1, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH, XMC_CCU4_SLICE_SR_ID_3);
 	NVIC_EnableIRQ(31);
 	NVIC_SetPriority(31, 0);
-	XMC_SCU_SetInterruptControl(31, XMC_SCU_IRQCTRL_CCU40_SR3_IRQ24);
+	XMC_SCU_SetInterruptControl(31, XMC_SCU_IRQCTRL_CCU40_SR3_IRQ31);
 
 
 	// Request shadow transfer for the slice 1
@@ -1462,7 +1462,7 @@ int64_t counter_get_count(const uint8_t channel) {
 	}
 
 	// The overflow and starting value is set to 2. Remove it from counter as offset
-	int64_t time = (((int64_t)time_high)*(1 << 16)) + time_low - 2;
+	int64_t time = (((int64_t)time_high)*(1 << 16)) + ((uint16_t)(((uint16_t)time_low) - ((uint16_t)2)));
 
 	return time;
 }

@@ -9,3 +9,6 @@
 
 2020-01-03: 2.0.3 (ef2a125)
 - Fix erroneous value_has_to_chnage-logic for callbacks
+
+2020-02-05: 2.0.4 (TBD)
+- Fix 0 to -1 transation handling and configure corresponding overflow correctly
