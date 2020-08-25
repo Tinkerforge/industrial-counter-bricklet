@@ -1,17 +1,12 @@
 #define __STDC_FORMAT_MACROS // for PRId64/PRIu64 in C++
 
-
-#include <inttypes.h>
-
 #include "bindings/hal_common.h"
 #include "bindings/bricklet_industrial_counter.h"
+#include <inttypes.h>
 
 #define UID "XYZ" // Change XYZ to the UID of your Industrial Counter Bricklet
 
 void check(int rc, const char* msg);
-
-
-
 
 TF_IndustrialCounter ic;
 
