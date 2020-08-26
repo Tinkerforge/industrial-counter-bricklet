@@ -1,8 +1,9 @@
 #define __STDC_FORMAT_MACROS // for PRId64/PRIu64 in C++
 
+#include <inttypes.h>
+
 #include "bindings/hal_common.h"
 #include "bindings/bricklet_industrial_counter.h"
-#include <inttypes.h>
 
 #define UID "XYZ" // Change XYZ to the UID of your Industrial Counter Bricklet
 
@@ -26,15 +27,13 @@ void example_setup(TF_HalContext *hal) {
 	// Create device object
 	check(tf_industrial_counter_create(&ic, UID, hal), "create device object");
 
-
 	// Register all counter callback to function all_counter_handler
 	tf_industrial_counter_register_all_counter_callback(&ic,
-	                                                   all_counter_handler,
-	                                                   NULL);
+	                                                    all_counter_handler,
+	                                                    NULL);
 
 	// Set period for all counter callback to 1s (1000ms)
 	tf_industrial_counter_set_all_counter_callback_configuration(&ic, 1000, true);
-
 }
 
 void example_loop(TF_HalContext *hal) {

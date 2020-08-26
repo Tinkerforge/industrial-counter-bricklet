@@ -1,8 +1,9 @@
 #define __STDC_FORMAT_MACROS // for PRId64/PRIu64 in C++
 
+#include <inttypes.h>
+
 #include "bindings/hal_common.h"
 #include "bindings/bricklet_industrial_counter.h"
-#include <inttypes.h>
 
 #define UID "XYZ" // Change XYZ to the UID of your Industrial Counter Bricklet
 
@@ -13,7 +14,6 @@ TF_IndustrialCounter ic;
 void example_setup(TF_HalContext *hal) {
 	// Create device object
 	check(tf_industrial_counter_create(&ic, UID, hal), "create device object");
-
 
 	// Get current counter from channel 0
 	int64_t counter;
@@ -32,7 +32,6 @@ void example_setup(TF_HalContext *hal) {
 	tf_hal_printf("Period (Channel 0): %" PRIu64 " ns\n", period);
 	tf_hal_printf("Frequency (Channel 0): %d 1/%d Hz\n", frequency, 1000.0);
 	tf_hal_printf("Value (Channel 0): %s\n", value ? "true" : "false");
-
 }
 
 void example_loop(TF_HalContext *hal) {
