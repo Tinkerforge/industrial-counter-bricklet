@@ -5,9 +5,13 @@
 
 void check(int rc, const char* msg);
 
+void example_setup(TF_HalContext *hal);
+void example_loop(TF_HalContext *hal);
+
+
 // Callback function for all counter callback
-void all_counter_handler(TF_IndustrialCounter *device, int64_t counter[4],
-                         void *user_data) {
+static void all_counter_handler(TF_IndustrialCounter *device, int64_t counter[4],
+                                void *user_data) {
 	(void)device; (void)user_data; // avoid unused parameter warning
 
 	tf_hal_printf("Counter (Channel 0): %lld\n", counter[0]);
@@ -17,7 +21,7 @@ void all_counter_handler(TF_IndustrialCounter *device, int64_t counter[4],
 	tf_hal_printf("\n");
 }
 
-TF_IndustrialCounter ic;
+static TF_IndustrialCounter ic;
 
 void example_setup(TF_HalContext *hal) {
 	// Create device object
