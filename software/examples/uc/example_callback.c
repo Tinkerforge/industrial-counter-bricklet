@@ -1,7 +1,3 @@
-#define __STDC_FORMAT_MACROS // for PRId64/PRIu64 in C++
-
-#include <inttypes.h>
-
 #include "bindings/hal_common.h"
 #include "bindings/bricklet_industrial_counter.h"
 
@@ -14,10 +10,10 @@ void all_counter_handler(TF_IndustrialCounter *device, int64_t counter[4],
                          void *user_data) {
 	(void)device; (void)user_data; // avoid unused parameter warning
 
-	tf_hal_printf("Counter (Channel 0): %" PRId64 "\n", counter[0]);
-	tf_hal_printf("Counter (Channel 1): %" PRId64 "\n", counter[1]);
-	tf_hal_printf("Counter (Channel 2): %" PRId64 "\n", counter[2]);
-	tf_hal_printf("Counter (Channel 3): %" PRId64 "\n", counter[3]);
+	tf_hal_printf("Counter (Channel 0): %lld\n", counter[0]);
+	tf_hal_printf("Counter (Channel 1): %lld\n", counter[1]);
+	tf_hal_printf("Counter (Channel 2): %lld\n", counter[2]);
+	tf_hal_printf("Counter (Channel 3): %lld\n", counter[3]);
 	tf_hal_printf("\n");
 }
 
