@@ -20,7 +20,7 @@ void example_setup(TF_HalContext *hal) {
 	check(tf_industrial_counter_get_counter(&ic, TF_INDUSTRIAL_COUNTER_CHANNEL_0,
 	                                        &counter), "get counter from channel 0");
 
-	tf_hal_printf("Counter (Channel 0): %lld\n", counter);
+	tf_hal_printf("Counter (Channel 0): %I64d\n", counter);
 
 	// Get current signal data from channel 0
 	uint16_t duty_cycle; uint64_t period; uint32_t frequency; bool value;
@@ -29,7 +29,7 @@ void example_setup(TF_HalContext *hal) {
 	                                            &value), "get signal data from channel 0");
 
 	tf_hal_printf("Duty Cycle (Channel 0): %d 1/%d %%\n", duty_cycle, 100.0);
-	tf_hal_printf("Period (Channel 0): %llu ns\n", period);
+	tf_hal_printf("Period (Channel 0): %I64u ns\n", period);
 	tf_hal_printf("Frequency (Channel 0): %d 1/%d Hz\n", frequency, 1000.0);
 	tf_hal_printf("Value (Channel 0): %s\n", value ? "true" : "false");
 }
