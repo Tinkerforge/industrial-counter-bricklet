@@ -1396,7 +1396,7 @@ void counter_set_count(const uint8_t channel, const int64_t count) {
     // The CCU4 has an interrupt for the decrease from 2 to 1 and we can define a match for the
     // increase from 1 to 2. The overflow from 0xFFFF to 0 and vice versa can't be easily captured.
 	uint16_t slice_value = (count+2) & 0xFFFF;
-	uint32_t overflow_value = (int32_t)((count+2) >> 16);
+	uint32_t overflow_value = (int32_t)((count) >> 16);
 
 	switch(channel) {
 		case 0: XMC_CCU4_SLICE_SetTimerValue(COUNTER_IN0_SLICE1, slice_value); counter_overflow0 = overflow_value; break;

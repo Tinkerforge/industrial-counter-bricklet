@@ -12,3 +12,6 @@
 
 2020-02-05: 2.0.4 (6347225)
 - Fix 0 to -1 transation handling and configure corresponding overflow correctly
+
+2020-09-30: 2.0.5 (TBD)
+- Fix bug in set_counter and counter range

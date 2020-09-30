@@ -27,8 +27,8 @@
 
 #include "bricklib2/utility/led_flicker.h"
 
-#define COUNTER_MAX_VALUE (((int64_t)(UINT16_MAX)*(int64_t)(INT32_MAX) + (int64_t)(UINT16_MAX)-(int64_t)(1)))
-#define COUNTER_MIN_VALUE ((int64_t)(UINT16_MAX)*(int64_t)(INT32_MIN))
+#define COUNTER_MIN_VALUE (-(((int64_t)1) << 47))
+#define COUNTER_MAX_VALUE (-COUNTER_MIN_VALUE - 1)
 
 #define COUNTER_NUM 4
 
