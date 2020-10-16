@@ -32,9 +32,9 @@ void example_setup(TF_HalContext *hal) {
 	                                            &duty_cycle, &period, &frequency,
 	                                            &value), "get signal data from channel 0");
 
-	tf_hal_printf("Duty Cycle (Channel 0): %d 1/%d %%\n", duty_cycle, 100.0);
+	tf_hal_printf("Duty Cycle (Channel 0): %d 1/%d %%\n", duty_cycle, 100);
 	tf_hal_printf("Period (Channel 0): %I64u ns\n", period);
-	tf_hal_printf("Frequency (Channel 0): %d 1/%d Hz\n", frequency, 1000.0);
+	tf_hal_printf("Frequency (Channel 0): %d 1/%d Hz\n", frequency, 1000);
 	tf_hal_printf("Value (Channel 0): %s\n", value ? "true" : "false");
 }
 
