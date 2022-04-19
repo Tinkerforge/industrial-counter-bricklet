@@ -9,8 +9,8 @@
 
 void check(int rc, const char* msg);
 
-void example_setup(TF_HalContext *hal);
-void example_loop(TF_HalContext *hal);
+void example_setup(TF_HAL *hal);
+void example_loop(TF_HAL *hal);
 
 
 // Callback function for all counter callback
@@ -27,7 +27,7 @@ static void all_counter_handler(TF_IndustrialCounter *device, int64_t counter[4]
 
 static TF_IndustrialCounter ic;
 
-void example_setup(TF_HalContext *hal) {
+void example_setup(TF_HAL *hal) {
 	// Create device object
 	check(tf_industrial_counter_create(&ic, UID, hal), "create device object");
 
@@ -40,7 +40,7 @@ void example_setup(TF_HalContext *hal) {
 	tf_industrial_counter_set_all_counter_callback_configuration(&ic, 1000, true);
 }
 
-void example_loop(TF_HalContext *hal) {
+void example_loop(TF_HAL *hal) {
 	// Poll for callbacks
 	tf_hal_callback_tick(hal, 0);
 }
