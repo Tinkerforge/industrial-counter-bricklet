@@ -20,15 +20,15 @@ func main() {
 
 	// Get current counter from channel 0.
 	counter, _ := ic.GetCounter(industrial_counter_bricklet.Channel0)
-	fmt.Printf("Counter (Channel 0): \n", counter)
+	fmt.Printf("Counter (Channel 0): %d\n", counter)
 
 	// Get current signal data from channel 0.
 	dutyCycle, period, frequency, value, _ := ic.GetSignalData(industrial_counter_bricklet.Channel0)
 
 	fmt.Printf("Duty Cycle (Channel 0): %f %%\n", float64(dutyCycle)/100.0)
-	fmt.Printf("Period (Channel 0):  ns\n", period)
+	fmt.Printf("Period (Channel 0): %d ns\n", period)
 	fmt.Printf("Frequency (Channel 0): %f Hz\n", float64(frequency)/1000.0)
-	fmt.Printf("Value (Channel 0): \n", value)
+	fmt.Printf("Value (Channel 0): %s\n", value)
 
 	fmt.Print("Press enter to exit.")
 	fmt.Scanln()
